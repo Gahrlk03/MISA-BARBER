@@ -1243,9 +1243,6 @@ if ($("admin-bookings")) {
             carregarServicosAdmin();
             carregarHorariosAdmin();
             carregarBloqueios();
-            carregarPlanosAdmin();
-            carregarClientesAssinatura();
-            carregarAssinaturasAdmin();
         }
     });
 }
