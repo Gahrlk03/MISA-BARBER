@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Página de pagamentos dos serviços MISA BARBER.">
+    <title>Pagamentos | MISA BARBER</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --fundo: #080A08;
+            --painel: #101810;
+            --verde: #173D2B;
+            --verde-claro: #24583D;
+            --branco: #FFFFFF;
+            --cinza: #B8B8B0;
+            --borda: #343936;
+        }
+        body {
+            min-height: 100vh;
+            background: radial-gradient(ellipse at top, #1b2b1d 0%, var(--fundo) 58%);
+            color: var(--branco);
+            font-family: 'Montserrat', Arial, sans-serif;
+        }
+        header {
+            padding: 23px 7%;
+            background: #101510;
+            border-bottom: 1px solid var(--borda);
+            text-align: center;
+        }
+        .logo {
+            color: var(--branco);
+            text-decoration: none;
+            font: 700 25px 'Cinzel', serif;
+            letter-spacing: 4px;
+        }
+        main { width: min(1100px, 92%); margin: 55px auto; }
+        .intro { text-align: center; margin-bottom: 38px; }
+        .intro small {
+            display: block;
+            color: #a8c4a9;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            margin-bottom: 13px;
+        }
+        h1, h2 { font-family: 'Cinzel', serif; }
+        h1 { font-size: clamp(27px, 5vw, 40px); margin-bottom: 12px; }
+        .intro p { color: var(--cinza); font-size: 14px; line-height: 1.8; }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(245px, 1fr));
+            gap: 18px;
+        }
+        .servico {
+            display: flex;
+            flex-direction: column;
+            background: var(--painel);
+            border: 1px solid var(--borda);
+            padding: 24px;
+            min-height: 205px;
+            transition: .2s;
+        }
+        .servico:hover { border-color: #71927a; transform: translateY(-3px); }
+        .servico h2 { font-size: 18px; line-height: 1.5; margin-bottom: 12px; }
+        .preco { font-size: 23px; font-weight: 700; margin-bottom: 20px; }
+        .pagar {
+            display: block;
+            margin-top: auto;
+            padding: 13px 15px;
+            background: var(--verde);
+            border: 1px solid var(--verde-claro);
+            color: var(--branco);
+            text-align: center;
+            text-decoration: none;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        .pagar:hover { background: var(--verde-claro); }
+        .pagar.indisponivel {
+            opacity: .45;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+        .aviso {
+            margin: 30px auto 0;
+            padding: 18px;
+            max-width: 720px;
+            border: 1px solid var(--borda);
+            color: var(--cinza);
+            font-size: 12px;
+            line-height: 1.8;
+            text-align: center;
+        }
+        .voltar { display: block; width: fit-content; margin: 30px auto 0; color: #c4d6c6; font-size: 13px; }
+        footer {
+            padding: 25px;
+            border-top: 1px solid var(--borda);
+            color: #777;
+            text-align: center;
+            font-size: 11px;
+        }
+        @media (max-width: 500px) {
+            main { margin: 38px auto; }
+            .servico { min-height: 180px; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <a class="logo" href="index.html">MISA BARBER</a>
+    </header>
+
+    <main>
+        <section class="intro">
+            <small>PAGAMENTO DE SERVIÇOS</small>
+            <h1>Escolha o serviço</h1>
+            <p>Selecione o serviço que deseja pagar.<br>Confira o valor antes de continuar.</p>
+        </section>
+
+        <section class="grid" id="lista-servicos" aria-label="Serviços disponíveis"></section>
+
+        <p class="aviso">
+            Os botões serão liberados quando os links de pagamento forem adicionados.
+            Após configurar, confira se cada link corresponde ao serviço e ao valor exibido.
+        </p>
+
+        <a class="voltar" href="index.html">← Voltar para a página inicial</a>
+    </main>
+
+    <footer>© 2026 MISA BARBER. Todos os direitos reservados.</footer>
+
+    <script>
+        // COLE O LINK DE PAGAMENTO DE CADA SERVIÇO ENTRE AS ASPAS.
+        // Exemplo: link: "https://seu-link-de-pagamento.com"
+        const servicos = [
+            { nome: "Corte de cabelo", preco: 65.00, link: "" },
+            { nome: "Barba com toalha quente", preco: 55.00, link: "" },
+            { nome: "Corte de cabelo e Barba", preco: 110.00, link: "" },
+            { nome: "Pezinho", preco: 35.00, link: "" },
+            { nome: "Barboterapia", preco: 90.00, link: "" },
+            { nome: "Selagem de cabelo curto", preco: 90.00, link: "" },
+            { nome: "Reconstrução de cabelo curto", preco: 60.00, link: "" },
+            { nome: "Tintura para cabelo curto", preco: 90.00, link: "" },
+            { nome: "Tintura para barba", preco: 50.00, link: "" }
+        ];
+
+        const formatoMoeda = valor => valor.toLocaleString("pt-BR", {
+            style: "currency",
+            currency: "BRL"
+        });
+
+        const lista = document.getElementById("lista-servicos");
+
+        lista.innerHTML = servicos.map(servico => {
+            const linkValido = servico.link.trim() !== "";
+
+            return `
+                <article class="servico">
+                    <h2>${servico.nome}</h2>
+                    <p class="preco">${formatoMoeda(servico.preco)}</p>
+                    <a
+                        class="pagar ${linkValido ? "" : "indisponivel"}"
+                        href="${linkValido ? servico.link : "#"}"
+                        ${linkValido ? 'target="_blank" rel="noopener noreferrer"' : 'aria-disabled="true"'}
+                    >${linkValido ? "PAGAR AGORA" : "LINK AINDA NÃO ADICIONADO"}</a>
+                </article>
+            `;
+        }).join("");
+    </script>
+</body>
+</html>
