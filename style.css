@@ -351,3 +351,51 @@ footer p, footer small { color:#B8C2BA; }
 .hero-foto { overflow:hidden; }
 .hero-foto img { transform:scale(1.035); transition:transform .6s ease; }
 .hero-foto:hover img { transform:scale(1.075); }
+
+
+/* CORES CORRETAS DAS SEÇÕES INFERIORES: TEXTO PRETO, BRANCO E VERDE-LIMÃO */
+.vazio {
+  background: #FFFFFF !important;
+  color: #111111 !important;
+}
+.vazio .rotulo { color: #315C20 !important; }
+.vazio h2 { color: #111111 !important; }
+.vazio > p { color: #333333 !important; }
+.vazio .selo {
+  background: #F0F5EC !important;
+  color: #111111 !important;
+  border: 1px solid #B5D99A !important;
+}
+.vazio .selo i { background: #8BC34A !important; }
+
+.convite {
+  background: #A8D94F !important;
+  color: #111111 !important;
+  border: 0 !important;
+}
+.convite .rotulo,
+.convite h2,
+.convite p { color: #111111 !important; }
+.convite .btn.escuro {
+  background: #111111 !important;
+  color: #FFFFFF !important;
+  border-color: #111111 !important;
+}
+.convite .btn.escuro:hover {
+  background: #FFFFFF !important;
+  color: #111111 !important;
+  border-color: #FFFFFF !important;
+}
+
+footer {
+  background: #FFFFFF !important;
+  color: #111111 !important;
+  border-top: 1px solid #DCE8D2 !important;
+}
+footer .logo { color: #315C20 !important; }
+footer p, footer small { color: #333333 !important; }
+.faixa {
+  background: #111111 !important;
+  color: #A8D94F !important;
+  border-color: #303030 !important;
+}
