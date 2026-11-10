@@ -64,3 +64,37 @@ with check (public.is_admin());
 
 -- A criação/ativação pelo cliente será ligada ao checkout quando o pagamento
 -- estiver integrado. Até lá, somente o barbeiro pode ativar assinaturas.
+
+
+-- SERVIÇOS QUE CADA PLANO PERMITE UTILIZAR
+-- Ex.: plano Corte = somente serviço Corte; plano Corte e Barba = os dois.
+
+create table if not exists public.membership_plan_services (
+    plan_id uuid not null references public.membership_plans(id) on delete cascade,
+    service_id uuid not null references public.services(id) on delete restrict,
+    primary key (plan_id, service_id)
+);
+
+alter table public.membership_plan_services enable row level security;
+
+drop policy if exists "plan services read" on public.membership_plan_services;
+create policy "plan services read"
+on public.membership_plan_services
+for select
+to anon, authenticated
+using (
+    exists (
+        select 1
+        from public.membership_plans p
+        where p.id = plan_id
+        and (p.active = true or public.is_admin())
+    )
+);
+
+drop policy if exists "plan services admin" on public.membership_plan_services;
+create policy "plan services admin"
+on public.membership_plan_services
+for all
+to authenticated
+using (public.is_admin())
+with check (public.is_admin());
