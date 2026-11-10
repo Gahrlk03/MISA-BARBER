@@ -854,3 +854,17 @@ button:disabled { cursor: not-allowed; opacity: .45; }
 @media (prefers-reduced-motion: reduce) {
     .success-modal { animation: none; }
 }
+
+
+/* CATALOGO DE SERVICOS E PLANOS */
+.catalog-title { margin-top: 42px; color: #FFFFFF; font-size: 22px; }
+.catalog-intro { margin: 12px auto 0; color: #FFFFFF; max-width: 650px; line-height: 1.7; }
+.plan-card { width: min(100%, 300px); padding: 28px 22px; background: #101810; border: 1px solid #173D2B; text-align: left; }
+.plan-card h3 { color: #FFFFFF; margin-bottom: 10px; }
+.plan-card p { color: #FFFFFF; font-size: 13px; line-height: 1.7; margin: 8px 0; }
+.plan-card .plan-price { font-size: 23px; font-weight: 700; }
+.plan-services { border-top: 1px solid #24583D; margin-top: 14px; padding-top: 12px; }
+.plan-card .btn { margin-top: 14px; width: 100%; }
+.plan-service-option { display: flex; align-items: center; gap: 9px; padding: 8px; border: 1px solid #24583D; }
+.plan-service-option input { width: auto; margin: 0; }
+.plan-service-option label { margin: 0; color: #FFFFFF; }
