@@ -697,3 +697,92 @@ select:focus {
         transition: none !important;
     }
 }
+
+
+/* ===== IDENTIDADE VISUAL MISA BARBER ===== */
+:root {
+    --black: #080A08;
+    --panel: #101810;
+    --moss: #173D2B;
+    --moss2: #24583D;
+    --gold: #FFFFFF;
+    --text: #FFFFFF;
+    --muted: #FFFFFF;
+    --line: #24583D;
+    --red: #C62828;
+}
+body { background: var(--black); color: #FFFFFF; }
+a, .logo, .form-card h1, .admin h1, h2, .card h3,
+.item strong, .calendar-header h3, .calendar-weekdays span,
+.booking-summary h3, .muted a { color: #FFFFFF; }
+.topo, .about, .booking, .panel, .calendar,
+.booking-summary, footer, .item { background: #080A08; }
+.topo { border-bottom: 1px solid #173D2B; }
+.hero {
+    background: radial-gradient(ellipse at center, #173D2B 0%, #0B160F 48%, #080A08 80%);
+}
+.eyebrow { color: #FFFFFF; }
+.titulo-natal {
+    background: linear-gradient(90deg, #FFFFFF, #B9D7C4, #FFFFFF);
+    background-size: 200% auto;
+    color: transparent;
+    background-clip: text;
+    -webkit-background-clip: text;
+    animation: brilhoVerde 4s linear infinite;
+}
+@keyframes brilhoVerde {
+    to { background-position: 200% center; }
+}
+.gold-line { background: #173D2B; }
+.btn, .calendar-header button {
+    background: #173D2B;
+    color: #FFFFFF;
+    border: 1px solid #24583D;
+}
+.btn.danger { background: #173D2B; border-color: #24583D; }
+.card, .form-card { background: #101810; border-color: #173D2B; }
+input, select {
+    background: #080A08;
+    color: #FFFFFF;
+    border-color: #24583D;
+}
+input::placeholder { color: #FFFFFF; opacity: .7; }
+input:focus, select:focus {
+    outline: 1px solid #C62828;
+    border-color: #C62828;
+}
+.calendar-day, .time-button {
+    background: #080A08;
+    color: #FFFFFF;
+    border-color: #24583D;
+}
+.calendar-day.selected, .time-button.selected {
+    background: #173D2B;
+    color: #FFFFFF;
+    border-color: #173D2B;
+}
+.booking-summary { border-color: #173D2B; }
+.message { color: #FFFFFF; }
+.message.error { color: #FF7777; }
+
+/* Contorno vermelho ao passar o mouse e ao navegar pelo teclado */
+a, button, .btn, .card, .item, .panel, .form-card,
+input, select, .calendar-day, .time-button {
+    transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease, background-color .2s ease;
+}
+a:hover, button:hover:not(:disabled), .btn:hover,
+.card:hover, .item:hover, .panel:hover,
+input:hover, select:hover, .calendar-day:hover:not(:disabled),
+.time-button:hover {
+    border-color: #C62828 !important;
+    box-shadow: 0 0 0 1px #C62828;
+}
+a:focus-visible, button:focus-visible, input:focus-visible,
+select:focus-visible, .btn:focus-visible {
+    outline: 2px solid #C62828;
+    outline-offset: 3px;
+}
+button:disabled { cursor: not-allowed; opacity: .45; }
+@media (hover: none) {
+    a:active, button:active, .btn:active { border-color: #C62828; }
+}
