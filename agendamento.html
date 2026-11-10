@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -30,33 +31,64 @@
 
             <h1>Novo agendamento</h1>
 
-            <label>
-                Serviço
+            <section class="booking-section">
+                <h2>01. Escolha o serviço</h2>
 
-                <select id="service" required>
-                    <option value="">Carregando serviços...</option>
-                </select>
-            </label>
+                <label>
+                    Serviço
+                    <select id="service" required>
+                        <option value="">Carregando serviços...</option>
+                    </select>
+                </label>
 
-            <div id="service-info" class="muted"></div>
+                <div id="service-info" class="muted"></div>
+            </section>
 
-            <label>
-                Data
+            <section class="booking-section">
+                <h2>02. Escolha a data</h2>
 
-                <input
-                    id="date"
-                    type="date"
-                    required
-                >
-            </label>
+                <div class="calendar">
 
-            <label>
-                Horário
+                    <div class="calendar-header">
+                        <button type="button" id="prev-month" aria-label="Mês anterior">‹</button>
+                        <h3 id="calendar-month"></h3>
+                        <button type="button" id="next-month" aria-label="Próximo mês">›</button>
+                    </div>
 
-                <select id="time" required>
-                    <option value="">Escolha uma data primeiro</option>
-                </select>
-            </label>
+                    <div class="calendar-weekdays">
+                        <span>DOM</span>
+                        <span>SEG</span>
+                        <span>TER</span>
+                        <span>QUA</span>
+                        <span>QUI</span>
+                        <span>SEX</span>
+                        <span>SÁB</span>
+                    </div>
+
+                    <div id="calendar-days" class="calendar-days"></div>
+                </div>
+
+                <input type="hidden" id="date" required>
+            </section>
+
+            <section class="booking-section">
+                <h2>03. Escolha o horário</h2>
+
+                <p id="time-instruction" class="muted">
+                    Primeiro escolha um serviço e uma data.
+                </p>
+
+                <div id="time-slots" class="time-slots"></div>
+
+                <input type="hidden" id="time" required>
+            </section>
+
+            <div class="booking-summary">
+                <h3>Resumo do agendamento</h3>
+                <p id="summary-service">Serviço: não selecionado</p>
+                <p id="summary-date">Data: não selecionada</p>
+                <p id="summary-time">Horário: não selecionado</p>
+            </div>
 
             <button class="btn full" type="submit">
                 CONFIRMAR AGENDAMENTO
@@ -65,9 +97,7 @@
             <p id="message" class="message"></p>
 
             <p class="muted">
-                <a href="meus-agendamentos.html">
-                    Ver meus agendamentos
-                </a>
+                <a href="meus-agendamentos.html">Ver meus agendamentos</a>
             </p>
 
         </form>
