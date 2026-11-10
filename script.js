@@ -746,15 +746,9 @@ if (bookingForm) {
             return;
         }
 
-        mostrarMensagem("message", "Agendamento realizado com sucesso!");
-
-        const confirmacao = $("booking-success");
-        if (confirmacao) {
-            confirmacao.hidden = false;
-            $("close-success")?.focus();
-        }
-
-        bookingForm.reset();
+        // Abre a página separada de agradecimento após confirmar no banco.
+        window.location.href = "agradecimento.html";
+        return;
 
         dataSelecionada = "";
         horarioSelecionado = "";
