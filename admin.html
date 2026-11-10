@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Painel | MISA BARBER</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <header class="topo">
+        <a class="logo" href="index.html">MISA BARBER</a>
+
+        <nav>
+            <a href="agendamento.html">Área do cliente</a>
+            <button class="link-button" id="logout">Sair</button>
+        </nav>
+    </header>
+
+    <main class="section admin">
+
+        <p class="eyebrow">ÁREA RESTRITA</p>
+
+        <h1>Painel do barbeiro</h1>
+
+        <div class="admin-grid">
+
+            <section class="panel">
+
+                <h2>Agendamentos</h2>
+
+                <div class="filters">
+
+                    <label>
+                        Data
+                        <input type="date" id="admin-date">
+                    </label>
+
+                    <button class="btn" id="load-admin">
+                        ATUALIZAR
+                    </button>
+
+                </div>
+
+                <div id="admin-bookings" class="stack">
+                    Carregando...
+                </div>
+
+            </section>
+
+            <section class="panel">
+
+                <h2>Adicionar serviço</h2>
+
+                <form id="service-form">
+
+                    <label>
+                        Nome
+                        <input id="service-name" required>
+                    </label>
+
+                    <label>
+                        Preço (R$)
+                        <input
+                            id="service-price"
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            required
+                        >
+                    </label>
+
+                    <label>
+                        Duração (minutos)
+                        <input
+                            id="service-duration"
+                            type="number"
+                            min="5"
+                            step="5"
+                            value="30"
+                            required
+                        >
+                    </label>
+
+                    <button class="btn full" type="submit">
+                        SALVAR SERVIÇO
+                    </button>
+
+                    <p id="service-message" class="message"></p>
+
+                </form>
+
+                <h2 class="subhead">Serviços cadastrados</h2>
+
+                <div id="admin-services" class="stack"></div>
+
+            </section>
+
+            <section class="panel">
+
+                <h2>Horário de funcionamento</h2>
+
+                <p class="muted">
+                    Configure os horários de cada dia.
+                </p>
+
+                <form id="hours-form">
+
+                    <div id="hours-fields"></div>
+
+                    <button class="btn full" type="submit">
+                        SALVAR HORÁRIOS
+                    </button>
+
+                    <p id="hours-message" class="message"></p>
+
+                </form>
+
+            </section>
+
+            <section class="panel">
+
+                <h2>Bloquear horário</h2>
+
+                <form id="block-form">
+
+                    <label>
+                        Data
+                        <input id="block-date" type="date" required>
+                    </label>
+
+                    <label>
+                        Início
+                        <input id="block-start" type="time" required>
+                    </label>
+
+                    <label>
+                        Fim
+                        <input id="block-end" type="time" required>
+                    </label>
+
+                    <label>
+                        Motivo
+                        <input id="block-reason" placeholder="Ex.: compromisso">
+                    </label>
+
+                    <button class="btn full" type="submit">
+                        BLOQUEAR HORÁRIO
+                    </button>
+
+                    <p id="block-message" class="message"></p>
+
+                </form>
+
+                <div id="blocks-list" class="stack"></div>
+
+            </section>
+
+        </div>
+
+    </main>
+
+    <script type="module" src="script.js"></script>
+
+</body>
+</html>
