@@ -1,0 +1,71 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Nova senha | MISA BARBER</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <header class="topo">
+        <a class="logo" href="index.html">MISA BARBER</a>
+
+        <nav>
+            <a href="index.html">Início</a>
+            <a href="login.html">Entrar</a>
+        </nav>
+    </header>
+
+    <main class="form-page">
+
+        <form id="update-password-form" class="form-card">
+
+            <p class="eyebrow">RECUPERAÇÃO DE CONTA</p>
+
+            <h1>Nova senha</h1>
+
+            <label>
+                Nova senha
+
+                <input
+                    id="new-password"
+                    type="password"
+                    required
+                    minlength="6"
+                    placeholder="Digite sua nova senha"
+                >
+            </label>
+
+            <label>
+                Confirmar senha
+
+                <input
+                    id="confirm-password"
+                    type="password"
+                    required
+                    minlength="6"
+                    placeholder="Digite novamente"
+                >
+            </label>
+
+            <button class="btn full" type="submit">
+                SALVAR NOVA SENHA
+            </button>
+
+            <p id="message" class="message"></p>
+
+        </form>
+
+    </main>
+
+    <script type="module" src="script.js"></script>
+
+</body>
+</html>

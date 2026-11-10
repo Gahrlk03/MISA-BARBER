@@ -1,0 +1,80 @@
+```html
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Entrar | MISA BARBER</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <header class="topo">
+        <a class="logo" href="index.html">MISA BARBER</a>
+
+        <nav>
+            <a href="index.html">Início</a>
+            <a href="cadastro.html">Criar conta</a>
+        </nav>
+    </header>
+
+    <main class="form-page">
+
+        <form id="login-form" class="form-card">
+
+            <p class="eyebrow">BEM-VINDO DE VOLTA</p>
+
+            <h1>Entrar</h1>
+
+            <label>
+                E-mail ou telefone
+
+                <input
+                    id="identifier"
+                    required
+                    autocomplete="username"
+                    placeholder="E-mail ou telefone"
+                >
+            </label>
+
+            <label>
+                Senha
+
+                <input
+                    id="password"
+                    type="password"
+                    required
+                    autocomplete="current-password"
+                    placeholder="Sua senha"
+                >
+            </label>
+
+            <p class="muted">
+                <a href="#" id="forgot-password">Esqueci minha senha</a>
+            </p>
+
+            <button class="btn full" type="submit">
+                ENTRAR
+            </button>
+
+            <p id="message" class="message"></p>
+
+            <p class="muted">
+                Ainda não tem conta?
+                <a href="cadastro.html">Cadastre-se</a>
+            </p>
+
+        </form>
+
+    </main>
+
+    <script type="module" src="script.js"></script>
+
+</body>
+</html>
+```

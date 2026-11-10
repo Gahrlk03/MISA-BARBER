@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Cadastro | MISA BARBER</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <header class="topo">
+        <a class="logo" href="index.html">MISA BARBER</a>
+
+        <nav>
+            <a href="index.html">Início</a>
+            <a href="login.html">Entrar</a>
+        </nav>
+    </header>
+
+    <main class="form-page">
+
+        <form id="signup-form" class="form-card">
+
+            <p class="eyebrow">CRIE SUA CONTA</p>
+
+            <h1>Cadastro</h1>
+
+            <label>
+                Nome completo
+
+                <input
+                    id="name"
+                    required
+                    minlength="3"
+                    autocomplete="name"
+                    placeholder="Seu nome completo"
+                >
+            </label>
+
+            <label>
+                Telefone
+
+                <input
+                    id="phone"
+                    required
+                    autocomplete="tel"
+                    placeholder="(32) 99999-9999"
+                >
+            </label>
+
+            <label>
+                E-mail
+
+                <input
+                    id="email"
+                    type="email"
+                    required
+                    autocomplete="email"
+                    placeholder="seu@email.com"
+                >
+            </label>
+
+            <label>
+                Senha
+
+                <input
+                    id="password"
+                    type="password"
+                    required
+                    minlength="6"
+                    autocomplete="new-password"
+                    placeholder="Mínimo de 6 caracteres"
+                >
+            </label>
+
+            <button class="btn full" type="submit">
+                CRIAR CONTA
+            </button>
+
+            <p id="message" class="message"></p>
+
+            <p class="muted">
+                Já tem cadastro?
+                <a href="login.html">Entre aqui</a>
+            </p>
+
+        </form>
+
+    </main>
+
+    <script type="module" src="script.js"></script>
+
+</body>
+</html>

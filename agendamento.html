@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Agendar | MISA BARBER</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <header class="topo">
+        <a class="logo" href="index.html">MISA BARBER</a>
+
+        <nav>
+            <a href="meus-agendamentos.html">Meus horários</a>
+            <button class="link-button" id="logout">Sair</button>
+        </nav>
+    </header>
+
+    <main class="form-page">
+
+        <form id="booking-form" class="form-card wide">
+
+            <p class="eyebrow">RESERVE SEU HORÁRIO</p>
+
+            <h1>Novo agendamento</h1>
+
+            <label>
+                Serviço
+
+                <select id="service" required>
+                    <option value="">Carregando serviços...</option>
+                </select>
+            </label>
+
+            <div id="service-info" class="muted"></div>
+
+            <label>
+                Data
+
+                <input
+                    id="date"
+                    type="date"
+                    required
+                >
+            </label>
+
+            <label>
+                Horário
+
+                <select id="time" required>
+                    <option value="">Escolha uma data primeiro</option>
+                </select>
+            </label>
+
+            <button class="btn full" type="submit">
+                CONFIRMAR AGENDAMENTO
+            </button>
+
+            <p id="message" class="message"></p>
+
+            <p class="muted">
+                <a href="meus-agendamentos.html">
+                    Ver meus agendamentos
+                </a>
+            </p>
+
+        </form>
+
+    </main>
+
+    <script type="module" src="script.js"></script>
+
+</body>
+</html>
