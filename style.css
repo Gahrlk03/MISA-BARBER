@@ -330,3 +330,24 @@ body:has(.intro) main { width:min(1100px,92%); margin:48px auto; }
   *,*::before,*::after { animation:none!important; scroll-behavior:auto!important; transition:none!important; }
   .success-modal { animation:none; }
 }
+
+
+/* AJUSTES FINAIS — textos inferiores, serviços e imagem */
+.vazio h2 { color:var(--white); }
+.vazio > p { color:#C5CEC7; }
+.vazio .selo { color:var(--white); }
+.convite { color:var(--bg); }
+.convite h2 { color:var(--bg); }
+.convite p { color:#26372C; }
+.convite .btn.escuro { color:var(--white); background:var(--bg); }
+.convite .btn.escuro:hover { color:var(--white); background:var(--green); }
+footer .logo { color:var(--mint); }
+footer p, footer small { color:#B8C2BA; }
+.card { display:flex; flex-direction:column; align-items:flex-start; }
+.card h3 { color:var(--mint); }
+.card p { color:#C5CEC7; }
+.card .service-price { color:var(--mint); }
+.service-book-btn { width:100%; margin-top:18px; font-size:10px; padding:11px 12px; }
+.hero-foto { overflow:hidden; }
+.hero-foto img { transform:scale(1.035); transition:transform .6s ease; }
+.hero-foto:hover img { transform:scale(1.075); }
