@@ -1079,3 +1079,23 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
     .hero-foto { margin: 0; align-self: end; }
 }
 
+/* PAGINA DE PAGAMENTOS */
+body:has(.intro) { background: radial-gradient(ellipse at top, #173D2B 0%, #101810 38%, #0A0A0A 78%); }
+body:has(.intro) > header { padding: 23px 7%; background: #0A0A0A; border-bottom: 1px solid #24583D; text-align: center; }
+body:has(.intro) main { width: min(1100px, 92%); margin: 55px auto; }
+.intro { text-align: center; margin-bottom: 38px; }
+.intro small { display: block; color: #B5E3C2; font-size: 11px; font-weight: 700; letter-spacing: 3px; margin-bottom: 13px; }
+.intro h1 { color: #B5E3C2; font-size: clamp(27px, 5vw, 40px); margin-bottom: 12px; }
+.intro p { color: #FFFFFF; opacity: .72; font-size: 14px; line-height: 1.8; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(245px, 1fr)); gap: 18px; }
+.servico { display: flex; flex-direction: column; background: #171717; border: 1px solid rgba(181,227,194,.24); border-radius: 24px; padding: 24px; min-height: 205px; transition: .2s; }
+.servico:hover { border-color: #B5E3C2; transform: translateY(-3px); }
+.servico h2 { color: #B5E3C2; font-size: 18px; line-height: 1.5; margin-bottom: 12px; }
+.preco { color: #FFFFFF; font-size: 23px; font-weight: 700; margin-bottom: 20px; }
+.pagar { display: block; margin-top: auto; padding: 13px 15px; background: #0F2A1C; border: 1px solid #B5E3C2; border-radius: 999px; color: #FFFFFF; text-align: center; text-decoration: none; font-size: 11px; font-weight: 700; letter-spacing: 1px; }
+.pagar:hover { background: #B5E3C2; color: #0A0A0A; }
+.pagar.indisponivel { opacity: .45; cursor: not-allowed; pointer-events: none; }
+.aviso { margin: 30px auto 0; padding: 18px; max-width: 720px; border: 1px solid #365443; border-radius: 16px; color: #FFFFFF; opacity: .75; font-size: 12px; line-height: 1.8; text-align: center; }
+.voltar { display: block; width: fit-content; margin: 30px auto 0; color: #B5E3C2; font-size: 13px; }
+@media (max-width: 500px) { body:has(.intro) main { margin: 38px auto; } .servico { min-height: 180px; } }
+
