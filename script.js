@@ -28,7 +28,8 @@ function dataHoje() {
 }
 
 function formatarData(data) {
-    return new Date(data).toLocaleDateString("pt-BR");
+    const [ano, mes, dia] = String(data).slice(0, 10).split("-");
+    return `${dia}/${mes}/${ano}`;
 }
 
 function formatarHorario(data) {
@@ -377,6 +378,50 @@ if (updatePasswordForm) {
     });
 }
 
+// ==========================================
+// AGENDAMENTO COM CALENDÁRIO VISUAL
+// ==========================================
+
+let mesAtual = new Date();
+mesAtual.setDate(1);
+
+let dataSelecionada = "";
+let horarioSelecionado = "";
+
+// CRIAR DATA NO FORMATO LOCAL
+
+function dataLocal(ano, mes, dia) {
+    return `${ano}-${String(mes + 1).padStart(2, "0")}-${String(dia).padStart(2, "0")}`;
+}
+
+// ATUALIZAR RESUMO
+
+function atualizarResumo() {
+    const servico = $("service");
+    if (!servico) return;
+
+    const opcao = servico.selectedOptions[0];
+
+    const resumoServico = $("summary-service");
+    const resumoData = $("summary-date");
+    const resumoHorario = $("summary-time");
+
+    if (resumoServico) {
+        resumoServico.textContent =
+            "Serviço: " + (servico.value ? opcao.textContent : "não selecionado");
+    }
+
+    if (resumoData) {
+        resumoData.textContent =
+            "Data: " + (dataSelecionada ? formatarData(dataSelecionada) : "não selecionada");
+    }
+
+    if (resumoHorario) {
+        resumoHorario.textContent =
+            "Horário: " + (horarioSelecionado || "não selecionado");
+    }
+}
+
 // CARREGAR SERVIÇOS NO AGENDAMENTO
 
 async function carregarServicosAgendamento() {
@@ -405,6 +450,9 @@ async function carregarServicosAgendamento() {
 
         select.appendChild(opcao);
     });
+
+    renderizarCalendario();
+    atualizarResumo();
 }
 
 // MOSTRAR PREÇO E DURAÇÃO
@@ -417,25 +465,148 @@ async function mostrarInfoServico() {
 
     if (!id) {
         $("service-info").textContent = "";
+
+        dataSelecionada = "";
+        horarioSelecionado = "";
+
+        $("date").value = "";
+        $("time").value = "";
+
+        $("time-slots").innerHTML = "";
+        $("time-instruction").textContent =
+            "Primeiro escolha um serviço e uma data.";
+
+        renderizarCalendario();
+        atualizarResumo();
         return;
     }
 
-    const { data } = await supabase
+    const { data, error } = await supabase
         .from("services")
         .select("*")
         .eq("id", id)
         .single();
+
+    if (error) {
+        mostrarMensagem("message", "Não foi possível carregar o serviço.", true);
+        return;
+    }
 
     if (data) {
         $("service-info").textContent =
             `Preço: ${dinheiro(data.price)} | Duração: ${data.duration_minutes} minutos`;
     }
 
-    await carregarHorarios();
+    atualizarResumo();
+
+    if (dataSelecionada) {
+        await carregarHorarios();
+    }
 }
 
 if ($("service")) {
     $("service").addEventListener("change", mostrarInfoServico);
+}
+
+// DESENHAR CALENDÁRIO
+
+function renderizarCalendario() {
+    const calendario = $("calendar-days");
+    const titulo = $("calendar-month");
+
+    if (!calendario || !titulo) return;
+
+    const ano = mesAtual.getFullYear();
+    const mes = mesAtual.getMonth();
+
+    const primeiroDia = new Date(ano, mes, 1).getDay();
+    const ultimoDia = new Date(ano, mes + 1, 0).getDate();
+
+    titulo.textContent = mesAtual.toLocaleDateString("pt-BR", {
+        month: "long",
+        year: "numeric"
+    });
+
+    calendario.innerHTML = "";
+
+    // ESPAÇOS ANTES DO PRIMEIRO DIA
+
+    for (let i = 0; i < primeiroDia; i++) {
+        const vazio = document.createElement("span");
+        vazio.className = "calendar-empty";
+        calendario.appendChild(vazio);
+    }
+
+    const hoje = dataHoje();
+
+    // CRIAR OS DIAS DO MÊS
+
+    for (let dia = 1; dia <= ultimoDia; dia++) {
+        const data = dataLocal(ano, mes, dia);
+
+        const botao = document.createElement("button");
+        botao.type = "button";
+        botao.textContent = dia;
+        botao.className = "calendar-day";
+
+        if (data < hoje) {
+            botao.disabled = true;
+        }
+
+        if (data === dataSelecionada) {
+            botao.classList.add("selected");
+        }
+
+        botao.addEventListener("click", async () => {
+            dataSelecionada = data;
+            horarioSelecionado = "";
+
+            $("date").value = data;
+            $("time").value = "";
+
+            renderizarCalendario();
+            atualizarResumo();
+
+            await carregarHorarios();
+        });
+
+        calendario.appendChild(botao);
+    }
+}
+
+// MÊS ANTERIOR
+
+if ($("prev-month")) {
+    $("prev-month").addEventListener("click", () => {
+        const hoje = new Date();
+        hoje.setDate(1);
+        hoje.setHours(0, 0, 0, 0);
+
+        const anterior = new Date(
+            mesAtual.getFullYear(),
+            mesAtual.getMonth() - 1,
+            1
+        );
+
+        if (anterior >= hoje) {
+            mesAtual = anterior;
+            renderizarCalendario();
+        }
+    });
+}
+
+// PRÓXIMO MÊS
+
+if ($("next-month")) {
+    $("next-month").addEventListener("click", () => {
+        mesAtual = new Date(
+            mesAtual.getFullYear(),
+            mesAtual.getMonth() + 1,
+            1
+        );
+
+        renderizarCalendario();
+    });
 }
 
 // BUSCAR HORÁRIOS DISPONÍVEIS
@@ -443,16 +614,27 @@ if ($("service")) {
 async function carregarHorarios() {
     const data = $("date")?.value;
     const servico = $("service")?.value;
-    const select = $("time");
+    const container = $("time-slots");
+    const instrucao = $("time-instruction");
 
-    if (!select) return;
+    if (!container || !instrucao) return;
 
-    select.innerHTML = '<option value="">Carregando horários...</option>';
+    container.innerHTML = "";
+    horarioSelecionado = "";
+
+    if ($("time")) {
+        $("time").value = "";
+    }
+
+    atualizarResumo();
 
     if (!data || !servico) {
-        select.innerHTML = '<option value="">Escolha serviço e data</option>';
+        instrucao.textContent =
+            "Primeiro escolha um serviço e uma data.";
         return;
     }
+
+    instrucao.textContent = "Buscando horários disponíveis...";
 
     const { data: horarios, error } = await supabase.rpc(
         "get_available_slots",
@@ -463,30 +645,45 @@ async function carregarHorarios() {
     );
 
     if (error) {
-        select.innerHTML = '<option value="">Erro ao buscar horários</option>';
+        instrucao.textContent =
+            "Não foi possível carregar os horários.";
+
+        console.error("Erro ao buscar horários:", error);
         return;
     }
 
-    select.innerHTML = '<option value="">Selecione um horário</option>';
+    if (!horarios || horarios.length === 0) {
+        instrucao.textContent =
+            "Não há horários disponíveis nessa data.";
+        return;
+    }
+
+    instrucao.textContent =
+        "Selecione um dos horários disponíveis:";
 
     horarios.forEach(item => {
         const hora = String(item.slot_time).slice(0, 5);
-        const opcao = document.createElement("option");
 
-        opcao.value = hora;
-        opcao.textContent = hora;
+        const botao = document.createElement("button");
+        botao.type = "button";
+        botao.className = "time-button";
+        botao.textContent = hora;
 
-        select.appendChild(opcao);
+        botao.addEventListener("click", () => {
+            horarioSelecionado = hora;
+            $("time").value = hora;
+
+            document.querySelectorAll(".time-button").forEach(outro => {
+                outro.classList.remove("selected");
+            });
+
+            botao.classList.add("selected");
+
+            atualizarResumo();
+        });
+
+        container.appendChild(botao);
     });
-
-    if (!horarios.length) {
-        select.innerHTML = '<option value="">Não há horários disponíveis</option>';
-    }
-}
-
-if ($("date")) {
-    $("date").min = dataHoje();
-    $("date").addEventListener("change", carregarHorarios);
 }
 
 // CONFIRMAR AGENDAMENTO
@@ -505,15 +702,26 @@ if (bookingForm) {
         const time = $("time").value;
 
         if (!serviceId || !date || !time) {
-            mostrarMensagem("message", "Preencha todos os campos.", true);
+            mostrarMensagem(
+                "message",
+                "Escolha o serviço, a data e o horário.",
+                true
+            );
             return;
         }
+
+        const botao = bookingForm.querySelector("button[type=submit]");
+        botao.disabled = true;
+
+        mostrarMensagem("message", "Confirmando seu agendamento...");
 
         const { error } = await supabase.rpc("create_booking", {
             p_service_id: serviceId,
             p_date: date,
             p_time: time
         });
+
+        botao.disabled = false;
 
         if (error) {
             mostrarMensagem("message", error.message, true);
@@ -525,14 +733,26 @@ if (bookingForm) {
 
         bookingForm.reset();
 
-        $("time").innerHTML =
-            '<option value="">Escolha uma data primeiro</option>';
+        dataSelecionada = "";
+        horarioSelecionado = "";
+
+        $("date").value = "";
+        $("time").value = "";
+
+        $("time-slots").innerHTML = "";
+        $("time-instruction").textContent =
+            "Primeiro escolha um serviço e uma data.";
 
         $("service-info").textContent = "";
+
+        renderizarCalendario();
+        atualizarResumo();
     });
 }
 
+// ==========================================
 // MEUS AGENDAMENTOS
+// ==========================================
 
 async function carregarMeusAgendamentos() {
     const container = $("my-bookings");
@@ -975,7 +1195,9 @@ if (blockForm) {
     });
 }
 
+// ==========================================
 // INICIALIZAÇÃO
+// ==========================================
 
 if (!configurado) {
     console.warn("Configure o Supabase no arquivo supabase.js.");
@@ -987,7 +1209,9 @@ if ($("home-services")) {
 
 if ($("booking-form")) {
     exigirLogin().then(usuario => {
-        if (usuario) carregarServicosAgendamento();
+        if (usuario) {
+            carregarServicosAgendamento();
+        }
     });
 }
 
