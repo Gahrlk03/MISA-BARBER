@@ -686,6 +686,23 @@ async function carregarHorarios() {
     });
 }
 
+
+const fecharConfirmacao = $("close-success");
+if (fecharConfirmacao) {
+    fecharConfirmacao.addEventListener("click", () => {
+        $("booking-success").hidden = true;
+    });
+}
+
+const fundoConfirmacao = $("booking-success");
+if (fundoConfirmacao) {
+    fundoConfirmacao.addEventListener("click", evento => {
+        if (evento.target === fundoConfirmacao) {
+            fundoConfirmacao.hidden = true;
+        }
+    });
+}
+
 // CONFIRMAR AGENDAMENTO
 
 const bookingForm = $("booking-form");
@@ -730,6 +747,12 @@ if (bookingForm) {
         }
 
         mostrarMensagem("message", "Agendamento realizado com sucesso!");
+
+        const confirmacao = $("booking-success");
+        if (confirmacao) {
+            confirmacao.hidden = false;
+            $("close-success")?.focus();
+        }
 
         bookingForm.reset();
 
