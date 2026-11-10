@@ -1,0 +1,6 @@
+COLOQUE A FOTO DA BARBEARIA NESTA PASTA.
+
+Nome que o site espera: foto-barbearia.jpg
+Caminho completo: imagens/foto-barbearia.jpg
+
+Depois de enviar a imagem, ela aparecerá na primeira seção do index.html.
