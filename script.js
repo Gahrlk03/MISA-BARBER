@@ -117,11 +117,12 @@ async function carregarServicosInicio() {
     }
 
     container.innerHTML = data.map(servico => `
-        <div class="card">
+        <article class="card">
             <h3>${escapar(servico.name)}</h3>
-            <p>${dinheiro(servico.price)}</p>
+            <p class="service-price">${dinheiro(servico.price)}</p>
             <p>${servico.duration_minutes} minutos</p>
-        </div>
+            <a class="btn service-book-btn" href="cadastro.html">FAZER CADASTRO E AGENDAR</a>
+        </article>
     `).join("");
 }
 
