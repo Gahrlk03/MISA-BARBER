@@ -98,3 +98,64 @@ for all
 to authenticated
 using (public.is_admin())
 with check (public.is_admin());
+
+
+-- SOLICITAÇÃO DE PLANO PELO CLIENTE
+-- O cliente só consegue criar uma solicitação pendente para um plano ativo.
+-- O preço, a quantidade de cortes e a ativação não são definidos pelo navegador.
+
+create or replace function public.request_subscription(p_plan_id uuid)
+returns uuid
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+    v_customer uuid := auth.uid();
+    v_cuts integer;
+    v_subscription_id uuid;
+    v_start date := current_date;
+    v_end date := (current_date + interval '1 month')::date - 1;
+begin
+    if v_customer is null then
+        raise exception 'Faça login para solicitar um plano.';
+    end if;
+
+    select cuts_per_month
+    into v_cuts
+    from public.membership_plans
+    where id = p_plan_id
+      and active = true;
+
+    if v_cuts is null then
+        raise exception 'Este plano não está disponível.';
+    end if;
+
+    insert into public.customer_subscriptions (
+        customer_id,
+        plan_id,
+        starts_on,
+        ends_on,
+        cuts_total,
+        cuts_used,
+        status,
+        payment_status
+    )
+    values (
+        v_customer,
+        p_plan_id,
+        v_start,
+        v_end,
+        v_cuts,
+        0,
+        'pending',
+        'pending'
+    )
+    returning id into v_subscription_id;
+
+    return v_subscription_id;
+end;
+$$;
+
+revoke all on function public.request_subscription(uuid) from public;
+grant execute on function public.request_subscription(uuid) to authenticated;
