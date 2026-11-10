@@ -786,3 +786,71 @@ button:disabled { cursor: not-allowed; opacity: .45; }
 @media (hover: none) {
     a:active, button:active, .btn:active { border-color: #C62828; }
 }
+
+/* JANELA DE AGENDAMENTO CONFIRMADO */
+.success-overlay[hidden] { display: none !important; }
+.success-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(0, 0, 0, .86);
+    backdrop-filter: blur(5px);
+}
+.success-modal {
+    width: min(100%, 440px);
+    padding: 38px 30px;
+    text-align: center;
+    background: #101810;
+    color: #FFFFFF;
+    border: 1px solid #173D2B;
+    border-radius: 14px;
+    box-shadow: 0 20px 70px rgba(0,0,0,.55);
+    animation: aparecerConfirmacao .25s ease-out;
+}
+.success-check {
+    display: grid;
+    place-items: center;
+    width: 68px;
+    height: 68px;
+    margin: 0 auto 20px;
+    border: 2px solid #173D2B;
+    border-radius: 50%;
+    background: #173D2B;
+    color: #FFFFFF;
+    font-size: 38px;
+    font-weight: 700;
+}
+.success-modal h2 {
+    margin: 8px 0 12px;
+    color: #FFFFFF;
+    font-family: 'Cinzel', serif;
+    font-size: clamp(21px, 5vw, 27px);
+}
+.success-modal > p:not(.eyebrow) {
+    margin: 0 0 24px;
+    color: #FFFFFF;
+    font-size: 13px;
+    line-height: 1.7;
+}
+.success-link { display: block; text-decoration: none; }
+.success-close {
+    margin-top: 14px;
+    padding: 10px 20px;
+    background: transparent;
+    color: #FFFFFF;
+    border: 1px solid #24583D;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.success-close:hover { border-color: #C62828; }
+@keyframes aparecerConfirmacao {
+    from { opacity: 0; transform: translateY(12px) scale(.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .success-modal { animation: none; }
+}
