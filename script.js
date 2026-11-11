@@ -87,10 +87,7 @@ async function verificarSessao30Minutos() {
 async function usuarioAtual() {
     const sessaoValida = await verificarSessao30Minutos();
     if (!sessaoValida) return null;
-    const { data, error } = await supabase.auth.getUser();
-    if (error) return null;
-    return data.user;
-}
+
     const { data, error } = await supabase.auth.getUser();
     if (error) return null;
     return data.user;
@@ -310,6 +307,15 @@ if (confirmationForm) {
 // LOGIN
 
 const loginForm = $("login-form");
+
+if (loginForm && configurado) {
+    (async () => {
+        const usuario = await usuarioAtual();
+        if (!usuario) return;
+        const { data: perfil } = await supabase.from("profiles").select("role").eq("id", usuario.id).single();
+        location.replace(perfil?.role === "admin" ? "admin.html" : "agendamento.html");
+    })();
+}
 
 if (loginForm) {
     loginForm.addEventListener("submit", async evento => {
