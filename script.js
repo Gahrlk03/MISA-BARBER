@@ -1,4 +1,20 @@
 
+// MOSTRAR OU OCULTAR SENHA NO CADASTRO
+document.addEventListener("click", evento => {
+    const botao = evento.target.closest("[data-toggle-password]");
+    if (!botao) return;
+
+    const campo = document.getElementById(botao.dataset.togglePassword);
+    if (!campo) return;
+
+    const mostrar = campo.type === "password";
+    campo.type = mostrar ? "text" : "password";
+    botao.textContent = mostrar ? "OCULTAR" : "MOSTRAR";
+    botao.setAttribute("aria-label", mostrar ? "Ocultar senha" : "Mostrar senha");
+    botao.setAttribute("aria-pressed", String(mostrar));
+});
+
+
 import { supabase, configurado } from "./supabase.js";
 
 const $ = (id) => document.getElementById(id);
