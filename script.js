@@ -184,7 +184,7 @@ if (cadastroForm) {
 
         mostrarMensagem(
             "message",
-            "Cadastro realizado! Confira seu e-mail para confirmar a conta. Depois faça login."
+            "Cadastro realizado! Se aparecer a confirmação por e-mail, confira sua caixa de entrada e o spam. Depois volte e faça login."
         );
     });
 }
