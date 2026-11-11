@@ -481,3 +481,23 @@ footer p, footer small { color: #333333 !important; }
 
 /* GARANTIR QUE O LINK ADMINISTRATIVO FIQUE OCULTO QUANDO NAO AUTORIZADO */
 #admin-back-link[hidden] { display: none !important; }
+
+
+/* CALENDÁRIO MENSAL DA AGENDA ADMINISTRATIVA */
+.admin-calendar { margin:18px 0 22px; padding:17px; background:var(--surface-2); border:1px solid var(--line); border-radius:15px; }
+.admin-calendar-top { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:17px; }
+.admin-calendar-top h3 { color:var(--mint); font-size:17px; text-transform:capitalize; text-align:center; }
+.admin-calendar-top button { width:36px; height:36px; border:1px solid var(--green-light); border-radius:9px; background:var(--green); color:var(--white); font-size:25px; }
+.admin-calendar-weekdays,.admin-calendar-days { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:7px; text-align:center; }
+.admin-calendar-weekdays { margin-bottom:8px; }
+.admin-calendar-weekdays span { color:var(--muted); font-size:10px; font-weight:800; }
+.admin-calendar-day { position:relative; min-width:0; aspect-ratio:1; border:1px solid var(--line); border-radius:9px; background:var(--bg); color:var(--white); font-size:13px; }
+.admin-calendar-day.has-bookings { background:#334B2C; border-color:#A8D94F; color:#fff; font-weight:800; }
+.admin-calendar-day.has-bookings i { position:absolute; bottom:5px; left:50%; width:5px; height:5px; transform:translateX(-50%); border-radius:50%; background:#C9F58A; }
+.admin-calendar-day.selected { outline:2px solid var(--mint); outline-offset:1px; background:var(--mint); color:#111; }
+.admin-calendar-day.today:not(.selected) { border-color:var(--mint); }
+.admin-calendar-empty { aspect-ratio:1; }
+.calendar-legend { display:flex; align-items:center; gap:8px; margin:14px 0 0; color:var(--muted); font-size:11px; }
+.calendar-legend i { width:9px; height:9px; border-radius:50%; background:#A8D94F; }
+.agenda-selected-title { margin-top:18px; color:var(--mint); font-size:16px; }
+@media(max-width:520px) { .admin-calendar { padding:11px; } .admin-calendar-weekdays,.admin-calendar-days { gap:4px; } .admin-calendar-day { font-size:11px; } }
