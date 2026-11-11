@@ -416,3 +416,21 @@ footer p, footer small { color: #333333 !important; }
 .chart-panel canvas { width:100% !important; height:280px !important; max-height:280px; }
 @media(max-width:1000px) { .stats-grid { grid-template-columns:repeat(3,minmax(0,1fr)); } }
 @media(max-width:700px) { .stats-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .charts-grid { grid-template-columns:1fr; } .dashboard-heading { align-items:flex-start; flex-direction:column; } }
+
+/* GRÁFICOS DO PAINEL — RENDERIZAÇÃO NATIVA */
+.bar-chart { display:flex; align-items:stretch; justify-content:space-around; gap:10px; min-height:230px; padding:18px 8px 8px; border-bottom:1px solid var(--line); }
+.bar-column { display:flex; flex:1; min-width:0; flex-direction:column; align-items:center; justify-content:flex-end; gap:8px; }
+.bar-column strong { color:var(--white); font-size:12px; }
+.bar-track { display:flex; align-items:flex-end; justify-content:center; width:min(100%,42px); height:145px; overflow:hidden; background:var(--surface-2); border-radius:8px 8px 3px 3px; }
+.bar-track span { display:block; width:100%; min-height:4px; background:linear-gradient(180deg,#C9F58A,#78A83B); border-radius:7px 7px 2px 2px; }
+.bar-column small { color:var(--muted); font-size:10px; }
+.status-chart { display:grid; gap:18px; padding:12px 0; }
+.status-row > div:first-child { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:7px; }
+.status-row span { display:flex; align-items:center; gap:9px; color:var(--muted); font-size:12px; }
+.status-row i { display:inline-block; width:9px; height:9px; border-radius:50%; }
+.status-row strong { color:var(--white); font-size:13px; }
+.status-track { height:9px; overflow:hidden; background:var(--surface-2); border-radius:99px; }
+.status-track span { display:block; height:100%; border-radius:99px; }
+#admin-back-link { display:inline-flex; align-items:center; padding:9px 15px; border:1px solid var(--mint); border-radius:999px; color:var(--mint); font-weight:700; }
+#admin-back-link:hover { background:var(--mint); color:var(--bg); }
+@media(max-width:700px) { .bar-chart { gap:5px; } .bar-track { height:120px; } }
