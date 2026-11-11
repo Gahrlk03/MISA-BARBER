@@ -1015,6 +1015,28 @@ async function carregarProximosAgendamentos() {
     }));
 }
 
+// HISTÓRICO: SERVIÇOS CONCLUÍDOS E CANCELADOS
+let abaHistoricoAdmin = "completed";
+async function carregarHistoricoAdmin() {
+    const container = $("admin-history");
+    if (!container) return;
+    const {data,error} = await supabase.from("appointments").select("id,start_at,end_at,status,profiles!appointments_customer_id_fkey(full_name,phone),services(name,price)").eq("status",abaHistoricoAdmin).order("start_at",{ascending:false}).limit(200);
+    if (error) { container.innerHTML = '<p class="muted">Erro ao carregar histórico: ' + escapar(error.message) + '</p>'; return; }
+    if (!data || !data.length) {
+        container.innerHTML = abaHistoricoAdmin === "completed" ? "<p>Nenhum atendimento concluído ainda.</p>" : "<p>Nenhum agendamento cancelado.</p>";
+        return;
+    }
+    container.innerHTML = data.map(item => {
+        const dataTexto = new Date(item.start_at).toLocaleDateString("pt-BR",{timeZone:"America/Sao_Paulo"});
+        return '<article class="item history-item"><strong>' + escapar(dataTexto) + ' às ' + escapar(formatarHorario(item.start_at)) + '</strong><p>Cliente: ' + escapar(item.profiles?.full_name || "Não informado") + '</p><p>Telefone: ' + escapar(item.profiles?.phone || "Não informado") + '</p><p>Serviço: ' + escapar(item.services?.name || "Serviço removido") + '</p><p>Preço: ' + dinheiro(item.services?.price || 0) + '</p><p>Status: ' + (item.status === "completed" ? "Concluído" : "Cancelado") + '</p></article>';
+    }).join("");
+}
+document.querySelectorAll("[data-history-tab]").forEach(botao => botao.addEventListener("click", async () => {
+    abaHistoricoAdmin = botao.dataset.historyTab;
+    document.querySelectorAll("[data-history-tab]").forEach(tab => tab.classList.toggle("active",tab === botao));
+    await carregarHistoricoAdmin();
+}));
+
 // CALENDÁRIO MENSAL DO PAINEL DO BARBEIRO
 let mesCalendarioAdmin = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
 function dataLocalISOAdmin(data) {
@@ -1078,7 +1100,7 @@ async function carregarAgendaAdmin() {
         `)
         .gte("start_at", inicio.toISOString())
         .lt("start_at", fim.toISOString())
-        .neq("status", "cancelled")
+        .in("status", ["pending", "confirmed"])
         .order("start_at");
 
     if (error) {
@@ -1125,6 +1147,8 @@ async function carregarAgendaAdmin() {
             } else {
                 await carregarAgendaAdmin();
                 await carregarDashboardAdmin();
+                await carregarHistoricoAdmin();
+                await carregarProximosAgendamentos();
             }
         });
     });
@@ -1156,6 +1180,8 @@ if ($("admin-bookings")) {
 
         await carregarAgendaAdmin();
         await carregarDashboardAdmin();
+        await carregarHistoricoAdmin();
+        await carregarProximosAgendamentos();
     });
 }
 
@@ -1166,7 +1192,7 @@ if ($("admin-date")) {
 if ($("load-admin")) {
     $("load-admin").addEventListener("click", async () => { await carregarCalendarioAdmin(); await carregarAgendaAdmin(); });
 }
-if ($("admin-calendar")) { carregarCalendarioAdmin(); carregarAgendaAdmin(); carregarProximosAgendamentos(); }
+if ($("admin-calendar")) { carregarCalendarioAdmin(); carregarAgendaAdmin(); carregarProximosAgendamentos(); carregarHistoricoAdmin(); }
 
 // ADMIN: SERVIÇOS
 
