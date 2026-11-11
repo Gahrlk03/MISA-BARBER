@@ -9,8 +9,9 @@ document.addEventListener("click", evento => {
 
     const mostrar = campo.type === "password";
     campo.type = mostrar ? "text" : "password";
-    botao.textContent = mostrar ? "OCULTAR" : "MOSTRAR";
+    botao.classList.toggle("senha-visivel", mostrar);
     botao.setAttribute("aria-label", mostrar ? "Ocultar senha" : "Mostrar senha");
+    botao.setAttribute("title", mostrar ? "Ocultar senha" : "Mostrar senha");
     botao.setAttribute("aria-pressed", String(mostrar));
 });
 
