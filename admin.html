@@ -6,7 +6,7 @@
 
     <title>Painel | MISA BARBER</title>
 
-    <link rel="stylesheet" href="style.css?v=admin-control-v4">
+    <link rel="stylesheet" href="style.css?v=avisos-agenda-1">
 
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -47,6 +47,11 @@
             </div>
         </section>
 
+        <section class="panel upcoming-panel">
+            <div class="upcoming-heading"><div><p class="eyebrow">FIQUE ATENTO</p><h2>Próximos agendamentos</h2><p class="muted">Compromissos dos próximos 30 dias, mesmo que sejam em outra data.</p></div><span id="upcoming-count" class="upcoming-count">0</span></div>
+            <div id="upcoming-bookings" class="upcoming-list"><p class="muted">Carregando próximos agendamentos...</p></div>
+        </section>
+
         <div class="admin-grid">
 
             <section class="panel">
@@ -66,9 +71,14 @@
 
                 </div>
 
-                <div id="admin-bookings" class="stack">
-                    Carregando...
+                <div class="admin-calendar" id="admin-calendar">
+                    <div class="admin-calendar-top"><button type="button" id="calendar-prev">‹</button><h3 id="calendar-month">Calendário</h3><button type="button" id="calendar-next">›</button></div>
+                    <div class="admin-calendar-weekdays"><span>Dom</span><span>Seg</span><span>Ter</span><span>Qua</span><span>Qui</span><span>Sex</span><span>Sáb</span></div>
+                    <div class="admin-calendar-days" id="admin-calendar-days"></div>
+                    <p class="calendar-legend"><i></i> Dia com agendamentos</p>
                 </div>
+                <h3 class="agenda-selected-title" id="agenda-selected-title">Agendamentos do dia</h3>
+                <div id="admin-bookings" class="stack">Carregando...</div>
 
             </section>
 
@@ -184,7 +194,7 @@
 
     </main>
 
-    <script type="module" src="script.js?v=sessao-30min-final"></script>
+    <script type="module" src="script.js?v=avisos-agenda-1"></script>
 
 </body>
 </html>
