@@ -264,7 +264,7 @@ if (confirmationForm) {
     confirmationForm.addEventListener("submit", async evento => {
         evento.preventDefault();
         const email = campoEmail.value.trim().toLowerCase();
-        const token = campoCodigo.value.trim().replace(/\\s/g, "");
+        const token = campoCodigo.value.trim().replace(/\s/g, "").replace(/\D/g, "");
         const botao = confirmationForm.querySelector("button[type=submit]");
         botao.disabled = true;
         mostrarMensagem("message", "Confirmando seu e-mail...");
@@ -926,7 +926,6 @@ async function carregarMeusAgendamentos() {
             services(name, price)
         `)
         .eq("customer_id", usuario.id)
-        .neq("status", "cancelled")
         .order("start_at", { ascending: true });
 
     if (error) {
