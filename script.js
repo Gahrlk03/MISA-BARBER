@@ -245,7 +245,22 @@ if (loginForm) {
         botao.disabled = false;
 
         if (resultado.error) {
-            mostrarMensagem("message", "E-mail, telefone ou senha inválidos.", true);
+            const erro = resultado.error.message || "";
+
+            if (/email not confirmed|email_not_confirmed/i.test(erro)) {
+                mostrarMensagem(
+                    "message",
+                    "Sua conta ainda precisa ser confirmada. Confira o e-mail usado no cadastro e a pasta de spam.",
+                    true
+                );
+            } else {
+                console.error("Erro no login:", resultado.error);
+                mostrarMensagem(
+                    "message",
+                    "Não foi possível entrar. Confira seu e-mail e sua senha.",
+                    true
+                );
+            }
             return;
         }
 
