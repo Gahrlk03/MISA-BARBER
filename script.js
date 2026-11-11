@@ -993,6 +993,7 @@ async function carregarAgendaAdmin() {
                 alert(error.message);
             } else {
                 await carregarAgendaAdmin();
+                await carregarDashboardAdmin();
             }
         });
     });
