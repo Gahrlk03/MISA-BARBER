@@ -1167,7 +1167,7 @@ async function carregarAgendaAdmin() {
             } else {
                 await carregarAgendaAdmin();
                 await carregarDashboardAdmin();
-                await carregarHistoricoAdmin();
+                await carregarCalendarioAdmin();
                 await carregarProximosAgendamentos();
             }
         });
@@ -1200,7 +1200,7 @@ if ($("admin-bookings")) {
 
         await carregarAgendaAdmin();
         await carregarDashboardAdmin();
-        await carregarHistoricoAdmin();
+        await carregarCalendarioAdmin();
         await carregarProximosAgendamentos();
     });
 }
