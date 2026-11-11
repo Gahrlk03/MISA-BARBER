@@ -984,13 +984,17 @@ async function carregarAgendaAdmin() {
 
     container.querySelectorAll("[data-status]").forEach(botao => {
         botao.addEventListener("click", async () => {
-            const { error } = await supabase
+            const { data, error } = await supabase
                 .from("appointments")
                 .update({ status: botao.dataset.value })
-                .eq("id", botao.dataset.status);
+                .eq("id", botao.dataset.status)
+                .select("id")
+                .maybeSingle();
 
             if (error) {
-                alert(error.message);
+                alert("Não foi possível atualizar o agendamento: " + error.message);
+            } else if (!data) {
+                alert("O banco não autorizou a alteração. Confira se você entrou com a conta administradora do Misael.");
             } else {
                 await carregarAgendaAdmin();
                 await carregarDashboardAdmin();
@@ -1019,41 +1023,88 @@ async function carregarServicosAdmin() {
         .order("name");
 
     if (error) {
-        container.textContent = "Erro ao carregar serviços.";
+        container.textContent = "Erro ao carregar serviços: " + error.message;
         return;
     }
 
-    container.innerHTML = data.map(servico => `
-        <article class="item">
-            <strong>${escapar(servico.name)}</strong>
-            <p>${dinheiro(servico.price)}</p>
-            <p>${servico.duration_minutes} minutos</p>
-            <p>${servico.active ? "Ativo" : "Desativado"}</p>
-
-            <button
-                class="btn small"
-                data-service-toggle="${servico.id}"
-                data-active="${servico.active}"
-            >
-                ${servico.active ? "DESATIVAR" : "ATIVAR"}
-            </button>
+    container.innerHTML = (data || []).map(servico => `
+        <article class="item service-admin-item">
+            <form class="service-edit-form" data-service-edit="${servico.id}">
+                <label>Nome do serviço
+                    <input name="name" value="${escapar(servico.name)}" required>
+                </label>
+                <label>Preço (R$)
+                    <input name="price" type="number" min="0" step="0.01" value="${Number(servico.price)}" required>
+                </label>
+                <label>Duração (minutos)
+                    <input name="duration" type="number" min="5" step="5" value="${servico.duration_minutes}" required>
+                </label>
+                <p>${servico.active ? "Ativo para os clientes" : "Oculto para os clientes"}</p>
+                <div class="actions">
+                    <button class="btn small" type="submit">SALVAR ALTERAÇÕES</button>
+                    <button class="btn small" type="button" data-service-toggle="${servico.id}" data-active="${servico.active}">
+                        ${servico.active ? "DESATIVAR" : "ATIVAR"}
+                    </button>
+                </div>
+                <p class="message" data-service-message></p>
+            </form>
         </article>
-    `).join("");
+    `).join("") || "<p>Nenhum serviço cadastrado.</p>";
+
+    container.querySelectorAll("[data-service-edit]").forEach(form => {
+        form.addEventListener("submit", async evento => {
+            evento.preventDefault();
+            const usuario = await exigirAdmin();
+            if (!usuario) return;
+            const dados = new FormData(form);
+            const atualizacao = {
+                name: String(dados.get("name") || "").trim(),
+                price: Number(dados.get("price")),
+                duration_minutes: Number(dados.get("duration"))
+            };
+            const mensagem = form.querySelector("[data-service-message]");
+            if (!atualizacao.name || !Number.isFinite(atualizacao.price) || atualizacao.price < 0 ||
+                !Number.isInteger(atualizacao.duration_minutes) || atualizacao.duration_minutes < 5) {
+                mensagem.textContent = "Confira nome, preço e duração.";
+                mensagem.classList.add("error");
+                return;
+            }
+            const botao = form.querySelector('button[type="submit"]');
+            botao.disabled = true;
+            const { data: salvo, error: erroSalvar } = await supabase
+                .from("services")
+                .update(atualizacao)
+                .eq("id", form.dataset.serviceEdit)
+                .select("id")
+                .maybeSingle();
+            botao.disabled = false;
+            if (erroSalvar || !salvo) {
+                mensagem.textContent = erroSalvar?.message || "Alteração não autorizada. Entre com a conta administradora do Misael.";
+                mensagem.classList.add("error");
+                return;
+            }
+            mensagem.classList.remove("error");
+            mensagem.textContent = "Serviço atualizado. O novo nome, preço e duração já estão no cadastro para os clientes.";
+            await carregarServicosAdmin();
+        });
+    });
 
     container.querySelectorAll("[data-service-toggle]").forEach(botao => {
         botao.addEventListener("click", async () => {
+            const usuario = await exigirAdmin();
+            if (!usuario) return;
             const novoEstado = botao.dataset.active !== "true";
-
-            const { error } = await supabase
+            const { data: salvo, error: erroSalvar } = await supabase
                 .from("services")
                 .update({ active: novoEstado })
-                .eq("id", botao.dataset.serviceToggle);
-
-            if (error) {
-                alert(error.message);
-            } else {
-                await carregarServicosAdmin();
+                .eq("id", botao.dataset.serviceToggle)
+                .select("id")
+                .maybeSingle();
+            if (erroSalvar || !salvo) {
+                alert(erroSalvar?.message || "Alteração não autorizada. Entre com a conta administradora do Misael.");
+                return;
             }
+            await carregarServicosAdmin();
         });
     });
 }
@@ -1302,7 +1353,7 @@ if ($("admin-back-link")) {
 
 // DASHBOARD ADMINISTRATIVO — SEM BIBLIOTECA EXTERNA
 async function carregarDashboardAdmin() {
-    const ids = ["stat-total", "stat-pending", "stat-confirmed", "stat-completed", "stat-revenue"];
+    const ids = ["stat-total", "stat-pending", "stat-confirmed", "stat-completed", "stat-cancelled", "stat-revenue"];
     ids.forEach(id => { if ($(id)) $(id).textContent = "…"; });
 
     const usuario = await exigirAdmin();
@@ -1336,10 +1387,12 @@ async function carregarDashboardAdmin() {
     }
 
     const contar = status => agendamentos.filter(item => item.status === status).length;
+    const ativos = agendamentos.filter(item => item.status !== "cancelled");
     const finalizados = agendamentos.filter(item => item.status === "completed");
     const faturamento = finalizados.reduce((total, item) => total + Number(servicosPorId[item.service_id]?.price || 0), 0);
 
-    $("stat-total").textContent = agendamentos.length;
+    $("stat-total").textContent = ativos.length;
+    if ($("stat-cancelled")) $("stat-cancelled").textContent = contar("cancelled");
     $("stat-pending").textContent = contar("pending");
     $("stat-confirmed").textContent = contar("confirmed");
     $("stat-completed").textContent = finalizados.length;
@@ -1403,10 +1456,12 @@ if ($("home-services")) {
 
 if ($("booking-form")) {
     exigirLogin().then(usuario => {
-        if (usuario) {
-            carregarServicosAgendamento();
-        }
+        if (usuario) carregarServicosAgendamento();
     });
+    document.addEventListener("visibilitychange", () => {
+        if (!document.hidden) carregarServicosAgendamento();
+    });
+    window.addEventListener("focus", carregarServicosAgendamento);
 }
 
 if ($("my-bookings")) {
