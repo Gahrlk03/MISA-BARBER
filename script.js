@@ -986,6 +986,39 @@ async function carregarMeusAgendamentos() {
     });
 }
 
+// CALENDÁRIO MENSAL DO PAINEL DO BARBEIRO
+let mesCalendarioAdmin = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+function dataLocalISOAdmin(data) {
+    return new Intl.DateTimeFormat("en-CA", {timeZone:"America/Sao_Paulo",year:"numeric",month:"2-digit",day:"2-digit"}).format(data);
+}
+async function carregarCalendarioAdmin() {
+    const grade = $("admin-calendar-days");
+    if (!grade) return;
+    const ano = mesCalendarioAdmin.getFullYear(), mes = mesCalendarioAdmin.getMonth();
+    const primeiro = new Date(ano, mes, 1), ultimo = new Date(ano, mes + 1, 0);
+    $("calendar-month").textContent = primeiro.toLocaleDateString("pt-BR", {month:"long",year:"numeric"});
+    const inicio = new Date(`${ano}-${String(mes + 1).padStart(2,"0")}-01T00:00:00-03:00`);
+    const fim = new Date(ano, mes + 1, 1);
+    const {data,error} = await supabase.from("appointments").select("start_at,status").gte("start_at",inicio.toISOString()).lt("start_at",fim.toISOString()).neq("status","cancelled");
+    if (error) { grade.innerHTML = '<p class="muted">Não foi possível carregar os dias.</p>'; return; }
+    const dias = new Set((data || []).map(item => dataLocalISOAdmin(new Date(item.start_at))));
+    const hoje = dataHoje(), selecionada = $("admin-date")?.value || hoje, celulas = [];
+    for (let vazio=0; vazio<primeiro.getDay(); vazio++) celulas.push('<span class="admin-calendar-empty"></span>');
+    for (let dia=1; dia<=ultimo.getDate(); dia++) {
+        const chave = `${ano}-${String(mes + 1).padStart(2,"0")}-${String(dia).padStart(2,"0")}`;
+        const tem = dias.has(chave);
+        celulas.push(`<button type="button" class="admin-calendar-day ${tem ? "has-bookings" : ""} ${chave === selecionada ? "selected" : ""} ${chave === hoje ? "today" : ""}" data-calendar-date="${chave}">${dia}${tem ? '<i></i>' : ""}</button>`);
+    }
+    grade.innerHTML = celulas.join("");
+    grade.querySelectorAll("[data-calendar-date]").forEach(botao => botao.addEventListener("click", async () => {
+        $("admin-date").value = botao.dataset.calendarDate;
+        await carregarCalendarioAdmin();
+        await carregarAgendaAdmin();
+    }));
+}
+$("calendar-prev")?.addEventListener("click", async () => { mesCalendarioAdmin.setMonth(mesCalendarioAdmin.getMonth()-1); await carregarCalendarioAdmin(); });
+$("calendar-next")?.addEventListener("click", async () => { mesCalendarioAdmin.setMonth(mesCalendarioAdmin.getMonth()+1); await carregarCalendarioAdmin(); });
+
 // ADMIN: AGENDA DO DIA
 
 async function carregarAgendaAdmin() {
@@ -996,6 +1029,8 @@ async function carregarAgendaAdmin() {
     if (!usuario) return;
 
     const dataEscolhida = $("admin-date").value || dataHoje();
+    const tituloDia = $("agenda-selected-title");
+    if (tituloDia) tituloDia.textContent = "Agendamentos de " + formatarData(dataEscolhida);
 
     const inicio = new Date(`${dataEscolhida}T00:00:00-03:00`);
     const fim = new Date(`${dataEscolhida}T00:00:00-03:00`);
@@ -1100,8 +1135,9 @@ if ($("admin-date")) {
 }
 
 if ($("load-admin")) {
-    $("load-admin").addEventListener("click", carregarAgendaAdmin);
+    $("load-admin").addEventListener("click", async () => { await carregarCalendarioAdmin(); await carregarAgendaAdmin(); });
 }
+if ($("admin-calendar")) { carregarCalendarioAdmin(); carregarAgendaAdmin(); }
 
 // ADMIN: SERVIÇOS
 
