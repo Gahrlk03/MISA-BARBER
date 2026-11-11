@@ -164,10 +164,7 @@ if (cadastroForm) {
 
         mostrarMensagem("message", "Criando sua conta...");
 
-        const paginaConfirmacao = new URL(
-            "./login.html",
-            window.location.href
-        ).href;
+        const paginaConfirmacao = "https://gahrlk03.github.io/MISA-BARBER/login.html";
 
         const { error } = await supabase.auth.signUp({
             email,
@@ -313,10 +310,7 @@ if (recuperarSenha) {
 
         mostrarMensagem("message", "Enviando e-mail de recuperação...");
 
-        const paginaRecuperacao = new URL(
-            "./redefinir-senha.html",
-            window.location.href
-        ).href;
+        const paginaRecuperacao = "https://gahrlk03.github.io/MISA-BARBER/redefinir-senha.html";
 
         const { error } = await supabase.auth.resetPasswordForEmail(
             email,
