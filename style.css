@@ -501,3 +501,19 @@ footer p, footer small { color: #333333 !important; }
 .calendar-legend i { width:9px; height:9px; border-radius:50%; background:#A8D94F; }
 .agenda-selected-title { margin-top:18px; color:var(--mint); font-size:16px; }
 @media(max-width:520px) { .admin-calendar { padding:11px; } .admin-calendar-weekdays,.admin-calendar-days { gap:4px; } .admin-calendar-day { font-size:11px; } }
+
+
+/* AVISOS DE PRÓXIMOS AGENDAMENTOS */
+.upcoming-panel { margin:0 0 28px; }
+.upcoming-heading { display:flex; align-items:center; justify-content:space-between; gap:16px; }
+.upcoming-heading h2 { margin:4px 0; color:var(--mint); }
+.upcoming-count { display:grid; place-items:center; min-width:42px; height:42px; padding:0 10px; border-radius:50%; background:var(--mint); color:#111; font-weight:900; }
+.upcoming-list { display:grid; gap:9px; margin-top:15px; }
+.upcoming-booking { display:flex; align-items:center; gap:14px; width:100%; padding:13px 15px; border:1px solid var(--line); border-radius:11px; background:var(--surface-2); color:var(--white); text-align:left; cursor:pointer; }
+.upcoming-booking:hover { border-color:var(--mint); background:#26351F; }
+.upcoming-date { min-width:92px; color:var(--mint); font-size:12px; font-weight:800; text-transform:capitalize; }
+.upcoming-info { display:grid; gap:4px; flex:1; min-width:0; }
+.upcoming-info strong { color:var(--white); font-size:13px; }
+.upcoming-info small { color:var(--muted); font-size:11px; }
+.upcoming-status { color:var(--mint); font-size:10px; font-weight:800; }
+@media(max-width:520px) { .upcoming-booking { gap:8px; padding:11px 9px; } .upcoming-date { min-width:76px; font-size:10px; } .upcoming-status { font-size:9px; } }
