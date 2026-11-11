@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmar e-mail | MISA BARBER</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="topo">
+        <a class="logo" href="index.html">MISA BARBER</a>
+        <nav><a href="index.html">Início</a><a href="login.html">Entrar</a></nav>
+    </header>
+    <main class="form-page">
+        <form id="confirmation-form" class="form-card">
+            <p class="eyebrow">CONFIRMAÇÃO DE CONTA</p>
+            <h1>Confirme seu e-mail</h1>
+            <p class="muted">Digite o código de 6 dígitos enviado para seu e-mail. Confira também o spam.</p>
+            <label>E-mail
+                <input id="confirmation-email" type="email" required autocomplete="email" placeholder="seu@email.com">
+            </label>
+            <label>Código de confirmação
+                <input id="confirmation-code" inputmode="numeric" autocomplete="one-time-code" required minlength="6" maxlength="8" placeholder="Código recebido por e-mail">
+            </label>
+            <button class="btn full" type="submit">CONFIRMAR E-MAIL</button>
+            <button class="btn full" type="button" id="resend-confirmation">REENVIAR CÓDIGO</button>
+            <p id="message" class="message"></p>
+            <p class="muted"><a href="login.html">Voltar para entrar</a></p>
+        </form>
+    </main>
+    <script type="module" src="script.js"></script>
+</body>
+</html>
