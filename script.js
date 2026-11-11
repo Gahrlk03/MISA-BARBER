@@ -1291,6 +1291,91 @@ if (blockForm) {
     });
 }
 
+
+
+// ACESSO RÁPIDO AO PAINEL PARA O ADMIN NA ÁREA DO CLIENTE
+if ($("admin-back-link")) {
+    usuarioAtual().then(async usuario => {
+        if (!usuario) return;
+        const { data, error } = await supabase
+            .from("profiles")
+            .select("role")
+            .eq("id", usuario.id)
+            .single();
+        if (!error && data?.role === "admin") {
+            $("admin-back-link").hidden = false;
+        }
+    });
+}
+
+// DASHBOARD PROFISSIONAL: INDICADORES E GRÁFICOS
+let graficoFinalizados = null;
+let graficoStatus = null;
+
+async function carregarDashboardAdmin() {
+    const ids = ["stat-total", "stat-pending", "stat-confirmed", "stat-completed", "stat-revenue"];
+    ids.forEach(id => { if ($(id)) $(id).textContent = "…"; });
+
+    const usuario = await exigirAdmin();
+    if (!usuario) return;
+
+    const { data, error } = await supabase
+        .from("appointments")
+        .select("id, start_at, status, services(name, price)")
+        .order("start_at", { ascending: true });
+
+    if (error) {
+        ids.forEach(id => { if ($(id)) $(id).textContent = "—"; });
+        console.error("Erro no dashboard:", error);
+        alert("Não foi possível carregar os indicadores. Confira as permissões do banco.");
+        return;
+    }
+
+    const agendamentos = data || [];
+    const contar = status => agendamentos.filter(item => item.status === status).length;
+    const finalizados = agendamentos.filter(item => item.status === "completed");
+    const faturamento = finalizados.reduce((total, item) => total + Number(item.services?.price || 0), 0);
+
+    $("stat-total").textContent = agendamentos.length;
+    $("stat-pending").textContent = contar("pending");
+    $("stat-confirmed").textContent = contar("confirmed");
+    $("stat-completed").textContent = finalizados.length;
+    $("stat-revenue").textContent = dinheiro(faturamento);
+
+    const diasGrafico = [];
+    const quantidadeDias = [];
+    const hoje = new Date();
+    for (let i = 6; i >= 0; i--) {
+        const dia = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate() - i);
+        const chave = [dia.getFullYear(), String(dia.getMonth()+1).padStart(2,"0"), String(dia.getDate()).padStart(2,"0")].join("-");
+        diasGrafico.push(dia.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" }));
+        quantidadeDias.push(finalizados.filter(item => String(item.start_at).slice(0,10) === chave).length);
+    }
+
+    const statusLabels = ["Pendente", "Confirmado", "Finalizado", "Cancelado"];
+    const statusValores = [contar("pending"), contar("confirmed"), contar("completed"), contar("cancelled")];
+
+    if (typeof Chart === "undefined") return;
+    if (graficoFinalizados) graficoFinalizados.destroy();
+    if (graficoStatus) graficoStatus.destroy();
+
+    graficoFinalizados = new Chart($("completed-chart"), {
+        type: "bar",
+        data: { labels: diasGrafico, datasets: [{ label: "Serviços finalizados", data: quantidadeDias, backgroundColor: "#A8D94F", borderRadius: 8 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } }
+    });
+
+    graficoStatus = new Chart($("status-chart"), {
+        type: "doughnut",
+        data: { labels: statusLabels, datasets: [{ data: statusValores, backgroundColor: ["#D6A84F", "#7FAE69", "#A8D94F", "#9B5555"], borderWidth: 0 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: "bottom" } } }
+    });
+}
+
+if ($("refresh-dashboard")) {
+    $("refresh-dashboard").addEventListener("click", carregarDashboardAdmin);
+}
+
 // ==========================================
 // INICIALIZAÇÃO
 // ==========================================
@@ -1319,6 +1404,7 @@ if ($("admin-bookings")) {
     exigirAdmin().then(usuario => {
         if (usuario) {
             carregarAgendaAdmin();
+            carregarDashboardAdmin();
             carregarServicosAdmin();
             carregarHorariosAdmin();
             carregarBloqueios();
