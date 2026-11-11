@@ -1293,25 +1293,13 @@ if (blockForm) {
 
 
 
-// ACESSO RÁPIDO AO PAINEL PARA O ADMIN NA ÁREA DO CLIENTE
+// ACESSO AO PAINEL ADMINISTRATIVO
+// O link fica visível na área do cliente; a página admin.html valida a permissão no servidor.
 if ($("admin-back-link")) {
-    usuarioAtual().then(async usuario => {
-        if (!usuario) return;
-        const { data, error } = await supabase
-            .from("profiles")
-            .select("role")
-            .eq("id", usuario.id)
-            .single();
-        if (!error && data?.role === "admin") {
-            $("admin-back-link").hidden = false;
-        }
-    });
+    $("admin-back-link").hidden = false;
 }
 
-// DASHBOARD PROFISSIONAL: INDICADORES E GRÁFICOS
-let graficoFinalizados = null;
-let graficoStatus = null;
-
+// DASHBOARD ADMINISTRATIVO — SEM BIBLIOTECA EXTERNA
 async function carregarDashboardAdmin() {
     const ids = ["stat-total", "stat-pending", "stat-confirmed", "stat-completed", "stat-revenue"];
     ids.forEach(id => { if ($(id)) $(id).textContent = "…"; });
@@ -1319,22 +1307,36 @@ async function carregarDashboardAdmin() {
     const usuario = await exigirAdmin();
     if (!usuario) return;
 
-    const { data, error } = await supabase
+    const { data: agendamentosData, error } = await supabase
         .from("appointments")
-        .select("id, start_at, status, services(name, price)")
+        .select("id, start_at, status, service_id")
         .order("start_at", { ascending: true });
 
     if (error) {
         ids.forEach(id => { if ($(id)) $(id).textContent = "—"; });
-        console.error("Erro no dashboard:", error);
-        alert("Não foi possível carregar os indicadores. Confira as permissões do banco.");
+        console.error("Erro ao carregar agendamentos do dashboard:", error);
+        $("completed-chart").textContent = "Não foi possível carregar os dados dos agendamentos.";
+        $("status-chart").textContent = "Verifique as permissões da tabela appointments.";
         return;
     }
 
-    const agendamentos = data || [];
+    const agendamentos = agendamentosData || [];
+    const servicoIds = [...new Set(agendamentos.map(item => item.service_id).filter(Boolean))];
+    let servicosPorId = {};
+
+    if (servicoIds.length) {
+        const { data: servicos, error: erroServicos } = await supabase
+            .from("services")
+            .select("id, name, price")
+            .in("id", servicoIds);
+
+        if (erroServicos) console.error("Erro ao carregar preços dos serviços:", erroServicos);
+        (servicos || []).forEach(servico => { servicosPorId[servico.id] = servico; });
+    }
+
     const contar = status => agendamentos.filter(item => item.status === status).length;
     const finalizados = agendamentos.filter(item => item.status === "completed");
-    const faturamento = finalizados.reduce((total, item) => total + Number(item.services?.price || 0), 0);
+    const faturamento = finalizados.reduce((total, item) => total + Number(servicosPorId[item.service_id]?.price || 0), 0);
 
     $("stat-total").textContent = agendamentos.length;
     $("stat-pending").textContent = contar("pending");
@@ -1342,34 +1344,44 @@ async function carregarDashboardAdmin() {
     $("stat-completed").textContent = finalizados.length;
     $("stat-revenue").textContent = dinheiro(faturamento);
 
-    const diasGrafico = [];
-    const quantidadeDias = [];
     const hoje = new Date();
+    const dias = [];
     for (let i = 6; i >= 0; i--) {
         const dia = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate() - i);
         const chave = [dia.getFullYear(), String(dia.getMonth()+1).padStart(2,"0"), String(dia.getDate()).padStart(2,"0")].join("-");
-        diasGrafico.push(dia.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" }));
-        quantidadeDias.push(finalizados.filter(item => String(item.start_at).slice(0,10) === chave).length);
+        dias.push({
+            label: dia.toLocaleDateString("pt-BR", {day:"2-digit",month:"2-digit"}),
+            total: finalizados.filter(item => {
+                const data = new Date(item.start_at);
+                return data.getFullYear() === dia.getFullYear() &&
+                    data.getMonth() === dia.getMonth() &&
+                    data.getDate() === dia.getDate();
+            }).length
+        });
     }
 
-    const statusLabels = ["Pendente", "Confirmado", "Finalizado", "Cancelado"];
-    const statusValores = [contar("pending"), contar("confirmed"), contar("completed"), contar("cancelled")];
+    const maior = Math.max(1, ...dias.map(dia => dia.total));
+    $("completed-chart").innerHTML = dias.map(dia => `
+        <div class="bar-column">
+            <strong>${dia.total}</strong>
+            <div class="bar-track"><span style="height:${Math.max(5, dia.total / maior * 100)}%"></span></div>
+            <small>${dia.label}</small>
+        </div>
+    `).join("");
 
-    if (typeof Chart === "undefined") return;
-    if (graficoFinalizados) graficoFinalizados.destroy();
-    if (graficoStatus) graficoStatus.destroy();
-
-    graficoFinalizados = new Chart($("completed-chart"), {
-        type: "bar",
-        data: { labels: diasGrafico, datasets: [{ label: "Serviços finalizados", data: quantidadeDias, backgroundColor: "#A8D94F", borderRadius: 8 }] },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } }
-    });
-
-    graficoStatus = new Chart($("status-chart"), {
-        type: "doughnut",
-        data: { labels: statusLabels, datasets: [{ data: statusValores, backgroundColor: ["#D6A84F", "#7FAE69", "#A8D94F", "#9B5555"], borderWidth: 0 }] },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: "bottom" } } }
-    });
+    const status = [
+        {label:"Pendentes",value:contar("pending"),color:"#D6A84F"},
+        {label:"Confirmados",value:contar("confirmed"),color:"#7FAE69"},
+        {label:"Finalizados",value:contar("completed"),color:"#A8D94F"},
+        {label:"Cancelados",value:contar("cancelled"),color:"#9B5555"}
+    ];
+    const totalStatus = Math.max(1, agendamentos.length);
+    $("status-chart").innerHTML = status.map(item => `
+        <div class="status-row">
+            <div><span><i style="background:${item.color}"></i>${item.label}</span><strong>${item.value}</strong></div>
+            <div class="status-track"><span style="width:${item.value / totalStatus * 100}%;background:${item.color}"></span></div>
+        </div>
+    `).join("");
 }
 
 if ($("refresh-dashboard")) {
