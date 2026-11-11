@@ -986,6 +986,35 @@ async function carregarMeusAgendamentos() {
     });
 }
 
+// AVISOS DE AGENDAMENTOS FUTUROS NO PAINEL
+async function carregarProximosAgendamentos() {
+    const lista = $("upcoming-bookings");
+    if (!lista) return;
+    const agora = new Date();
+    const limite = new Date(agora);
+    limite.setDate(limite.getDate() + 30);
+    const {data,error} = await supabase.from("appointments").select("id,start_at,status,profiles!appointments_customer_id_fkey(full_name,phone),services(name)").gte("start_at",agora.toISOString()).lt("start_at",limite.toISOString()).in("status",["pending","confirmed"]).order("start_at").limit(100);
+    if (error) { lista.innerHTML = '<p class="muted">Não foi possível carregar os próximos agendamentos.</p>'; return; }
+    $("upcoming-count").textContent = String((data || []).length);
+    if (!data || !data.length) { lista.innerHTML = '<p class="muted">Nenhum agendamento nos próximos 30 dias.</p>'; return; }
+    lista.innerHTML = data.map(item => {
+        const dataHora = new Date(item.start_at);
+        const dataTexto = dataHora.toLocaleDateString("pt-BR",{timeZone:"America/Sao_Paulo",weekday:"short",day:"2-digit",month:"2-digit"});
+        const horaTexto = dataHora.toLocaleTimeString("pt-BR",{timeZone:"America/Sao_Paulo",hour:"2-digit",minute:"2-digit"});
+        const diaISO = dataLocalISOAdmin(dataHora);
+        return '<button type="button" class="upcoming-booking" data-upcoming-date="' + diaISO + '"><span class="upcoming-date">' + escapar(dataTexto) + '</span><span class="upcoming-info"><strong>' + escapar(item.profiles?.full_name || "Cliente") + '</strong><small>' + escapar(item.services?.name || "Serviço") + ' · ' + escapar(horaTexto) + '</small></span><span class="upcoming-status">' + (item.status === "confirmed" ? "Confirmado" : "Pendente") + '</span></button>';
+    }).join("");
+    lista.querySelectorAll("[data-upcoming-date]").forEach(botao => botao.addEventListener("click", async () => {
+        const data = botao.dataset.upcomingDate;
+        $("admin-date").value = data;
+        const [ano,mes] = data.split("-").map(Number);
+        mesCalendarioAdmin = new Date(ano,mes-1,1);
+        await carregarCalendarioAdmin();
+        await carregarAgendaAdmin();
+        $("admin-calendar")?.scrollIntoView({behavior:"smooth",block:"center"});
+    }));
+}
+
 // CALENDÁRIO MENSAL DO PAINEL DO BARBEIRO
 let mesCalendarioAdmin = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
 function dataLocalISOAdmin(data) {
@@ -1137,7 +1166,7 @@ if ($("admin-date")) {
 if ($("load-admin")) {
     $("load-admin").addEventListener("click", async () => { await carregarCalendarioAdmin(); await carregarAgendaAdmin(); });
 }
-if ($("admin-calendar")) { carregarCalendarioAdmin(); carregarAgendaAdmin(); }
+if ($("admin-calendar")) { carregarCalendarioAdmin(); carregarAgendaAdmin(); carregarProximosAgendamentos(); }
 
 // ADMIN: SERVIÇOS
 
