@@ -6,7 +6,7 @@
 
     <title>Painel | MISA BARBER</title>
 
-    <link rel="stylesheet" href="style.css?v=avisos-agenda-1">
+    <link rel="stylesheet" href="style.css?v=historico-status-1">
 
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -79,6 +79,14 @@
                 </div>
                 <h3 class="agenda-selected-title" id="agenda-selected-title">Agendamentos do dia</h3>
                 <div id="admin-bookings" class="stack">Carregando...</div>
+                <section class="booking-history">
+                    <h3>Histórico de atendimentos</h3>
+                    <div class="history-tabs">
+                        <button type="button" class="history-tab active" data-history-tab="completed">Concluídos</button>
+                        <button type="button" class="history-tab" data-history-tab="cancelled">Cancelados</button>
+                    </div>
+                    <div id="admin-history" class="stack"><p class="muted">Carregando histórico...</p></div>
+                </section>
 
             </section>
 
@@ -194,7 +202,7 @@
 
     </main>
 
-    <script type="module" src="script.js?v=avisos-agenda-1"></script>
+    <script type="module" src="script.js?v=historico-status-1"></script>
 
 </body>
 </html>
