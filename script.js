@@ -1070,7 +1070,7 @@ async function carregarCalendarioAdmin() {
     $("calendar-month").textContent = primeiro.toLocaleDateString("pt-BR", {month:"long",year:"numeric"});
     const inicio = new Date(`${ano}-${String(mes + 1).padStart(2,"0")}-01T00:00:00-03:00`);
     const fim = new Date(ano, mes + 1, 1);
-    const {data,error} = await supabase.from("appointments").select("start_at,status").gte("start_at",inicio.toISOString()).lt("start_at",fim.toISOString()).neq("status","cancelled");
+    const {data,error} = await supabase.from("appointments").select("start_at,status").gte("start_at",inicio.toISOString()).lt("start_at",fim.toISOString()).in("status", ["pending", "confirmed"]);
     if (error) { grade.innerHTML = '<p class="muted">Não foi possível carregar os dias.</p>'; return; }
     const dias = new Set((data || []).map(item => dataLocalISOAdmin(new Date(item.start_at))));
     const hoje = dataHoje(), selecionada = $("admin-date")?.value || hoje, celulas = [];
