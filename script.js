@@ -45,12 +45,17 @@ function dataHoje() {
 }
 
 function formatarData(data) {
-    const [ano, mes, dia] = String(data).slice(0, 10).split("-");
-    return `${dia}/${mes}/${ano}`;
+    const valor = String(data ?? "");
+    if (/^\d{4}-\d{2}-\d{2}$/.test(valor)) {
+        const [ano, mes, dia] = valor.split("-");
+        return `${dia}/${mes}/${ano}`;
+    }
+    return new Date(data).toLocaleDateString("pt-BR", { timeZone: "America/Sao_Paulo" });
 }
 
 function formatarHorario(data) {
     return new Date(data).toLocaleTimeString("pt-BR", {
+        timeZone: "America/Sao_Paulo",
         hour: "2-digit",
         minute: "2-digit"
     });
@@ -165,6 +170,24 @@ async function carregarServicosInicio() {
     `).join("");
 }
 
+// REDIRECIONAR USUÁRIO JÁ CONECTADO NA PÁGINA INICIAL
+if (document.querySelector(".hero") && configurado) {
+    (async () => {
+        const usuario = await usuarioAtual();
+        if (!usuario) return;
+        const { data: perfil, error } = await supabase
+            .from("profiles")
+            .select("role")
+            .eq("id", usuario.id)
+            .maybeSingle();
+        if (error) {
+            console.error("Não foi possível verificar o perfil:", error);
+            return;
+        }
+        location.replace(perfil?.role === "admin" ? "admin.html" : "agendamento.html");
+    })();
+}
+
 // CADASTRO
 
 const cadastroForm = $("signup-form");
@@ -172,16 +195,6 @@ const cadastroForm = $("signup-form");
 if (cadastroForm) {
     cadastroForm.addEventListener("submit", async evento => {
         evento.preventDefault();
-
-        // Se já estiver autenticado, a página inicial encaminha para a área correta.
-if (document.querySelector(".hero") && configurado) {
-    (async () => {
-        const usuario = await usuarioAtual();
-        if (!usuario) return;
-        const { data: perfil } = await supabase.from("profiles").select("role").eq("id", usuario.id).single();
-        location.replace(perfil?.role === "admin" ? "admin.html" : "agendamento.html");
-    })();
-}
 
 if (!configurado) {
             mostrarMensagem("message", "Configure o Supabase primeiro.", true);
@@ -889,20 +902,6 @@ if (bookingForm) {
         window.location.href = "agradecimento.html";
         return;
 
-        dataSelecionada = "";
-        horarioSelecionado = "";
-
-        $("date").value = "";
-        $("time").value = "";
-
-        $("time-slots").innerHTML = "";
-        $("time-instruction").textContent =
-            "Primeiro escolha um serviço e uma data.";
-
-        $("service-info").textContent = "";
-
-        renderizarCalendario();
-        atualizarResumo();
     });
 }
 
@@ -954,7 +953,7 @@ async function carregarMeusAgendamentos() {
                 <p>Data: ${formatarData(item.start_at)}</p>
                 <p>Horário: ${formatarHorario(item.start_at)}</p>
                 <p>Preço: ${dinheiro(item.services?.price || 0)}</p>
-                <p>Status: ${escapar(item.status)}</p>
+                <p>Status: ${({pending:"Pendente",confirmed:"Confirmado",completed:"Concluído",cancelled:"Cancelado"})[item.status] || "Em análise"}</p>
 
                 ${podeCancelar ? `
                     <button
@@ -1661,7 +1660,7 @@ async function carregarDashboardAdmin() {
     }
 
     const contar = status => agendamentos.filter(item => item.status === status).length;
-    const ativos = agendamentos.filter(item => item.status !== "cancelled");
+    const ativos = agendamentos.filter(item => ["pending", "confirmed"].includes(item.status));
     const finalizados = agendamentos.filter(item => item.status === "completed");
     const faturamento = finalizados.reduce((total, item) => total + Number(servicosPorId[item.service_id]?.price || 0), 0);
 
