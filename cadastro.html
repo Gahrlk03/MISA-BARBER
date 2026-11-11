@@ -74,15 +74,17 @@
 
             <label>
                 Senha
-
-                <input
-                    id="password"
-                    type="password"
-                    required
-                    minlength="6"
-                    autocomplete="new-password"
-                    placeholder="Mínimo de 6 caracteres"
-                >
+                <div class="password-field">
+                    <input
+                        id="password"
+                        type="password"
+                        required
+                        minlength="6"
+                        autocomplete="new-password"
+                        placeholder="Mínimo de 6 caracteres"
+                    >
+                    <button class="password-toggle" type="button" data-toggle-password="password" aria-label="Mostrar senha" aria-pressed="false">MOSTRAR</button>
+                </div>
             </label>
 
             <button class="btn full" type="submit">
@@ -100,7 +102,7 @@
 
     </main>
 
-    <script type="module" src="script.js"></script>
+    <script type="module" src="script.js?v=mostrar-senha-v1"></script>
 
 </body>
 </html>
