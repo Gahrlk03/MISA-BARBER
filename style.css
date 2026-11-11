@@ -552,3 +552,49 @@ footer p, footer small { color: #333333 !important; }
 .dashboard-status-details h3 { margin-bottom:14px; color:var(--mint); font-size:16px; }
 .dashboard-status-details .stack { display:grid; gap:10px; max-height:520px; overflow:auto; padding-right:4px; }
 .dashboard-status-details .history-item { border-left:3px solid var(--mint); }
+
+
+/* ACABAMENTO PROFISSIONAL E ACESSIBILIDADE */
+:root { --focus-ring: 0 0 0 3px rgba(181,227,194,.22); }
+::selection { background:var(--mint); color:var(--bg); }
+html { scroll-padding-top:90px; }
+body { -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility; }
+img { max-width:100%; }
+input,select,textarea { transition:border-color .18s ease,box-shadow .18s ease,background .18s ease; }
+input:focus,select:focus,textarea:focus { box-shadow:var(--focus-ring); }
+input:disabled,select:disabled,textarea:disabled { opacity:.6; cursor:not-allowed; }
+.btn:focus-visible,nav a:focus-visible,.link-button:focus-visible { outline:2px solid var(--mint); outline-offset:4px; }
+.form-card { animation:card-in .35s var(--ease) both; }
+@keyframes card-in { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+.form-card > .muted { margin-bottom:16px; }
+.form-card label { font-weight:600; }
+.form-card input:focus-visible,.form-card select:focus-visible { border-color:var(--mint); }
+.item { box-shadow:0 8px 22px rgba(0,0,0,.12); }
+.item:hover { border-color:#42634B; }
+.item .btn { margin-top:8px; }
+.stat-card,.panel,.form-card,.card { box-shadow:0 12px 32px rgba(0,0,0,.16); }
+.stat-card { transition:transform .2s ease,border-color .2s ease; }
+.stat-card:hover { transform:translateY(-2px); border-color:#58785E; }
+.dashboard-status-details .item { overflow-wrap:anywhere; }
+.dashboard-status-details .stack { overscroll-behavior:contain; }
+.upcoming-booking:focus-visible,.admin-calendar-day:focus-visible,.time-button:focus-visible { outline:2px solid var(--mint); outline-offset:2px; }
+.message:empty { display:none; }
+.error { color:var(--danger)!important; }
+.success { color:var(--mint)!important; }
+footer { margin-top:40px; }
+@media(max-width:700px) {
+  .topo { position:relative; min-height:auto; }
+  .section.admin { padding:34px 4%; }
+  .panel { padding:17px; }
+  .dashboard-status-details .stack { max-height:420px; }
+  .stats-grid { gap:9px; }
+  .stat-card { padding:14px; }
+  .stat-card span,.stat-card small { font-size:10px; }
+}
+@media(max-width:380px) {
+  .time-slots { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .hours-row { grid-template-columns:1fr; }
+  .hours-row label:first-child { grid-column:auto; }
+  .upcoming-booking { align-items:flex-start; flex-wrap:wrap; }
+  .upcoming-status { margin-left:auto; }
+}
