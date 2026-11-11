@@ -21,7 +21,7 @@
                 <input id="confirmation-email" type="email" required autocomplete="email" placeholder="seu@email.com">
             </label>
             <label>Código de confirmação
-                <input id="confirmation-code" inputmode="numeric" autocomplete="one-time-code" required minlength="6" maxlength="8" placeholder="Código recebido por e-mail">
+                <input id="confirmation-code" inputmode="numeric" autocomplete="one-time-code" required minlength="6" maxlength="6" pattern="[0-9]{6}" inputmode="numeric" placeholder="Código recebido por e-mail">
             </label>
             <button class="btn full" type="submit">CONFIRMAR E-MAIL</button>
             <button class="btn full" type="button" id="resend-confirmation">REENVIAR CÓDIGO</button>
