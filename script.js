@@ -164,10 +164,16 @@ if (cadastroForm) {
 
         mostrarMensagem("message", "Criando sua conta...");
 
+        const paginaConfirmacao = new URL(
+            "./login.html",
+            window.location.href
+        ).href;
+
         const { error } = await supabase.auth.signUp({
             email,
             password: senha,
             options: {
+                emailRedirectTo: paginaConfirmacao,
                 data: {
                     full_name: nome,
                     phone: telefone
