@@ -1484,13 +1484,13 @@ if (blockForm) {
 
 
 
-// MOSTRAR O LINK DO PAINEL SOMENTE PARA A CONTA ADMINISTRADORA
+// CRIAR O LINK DO PAINEL SOMENTE DEPOIS DE CONFIRMAR QUE A CONTA E ADMIN
 async function controlarLinkPainelAdmin() {
-    const linkPainel = $("admin-back-link");
-    if (!linkPainel) return;
+    const nav = document.querySelector("header nav");
+    if (!nav) return;
 
-    // Por segurança, o link começa sempre escondido.
-    linkPainel.hidden = true;
+    // Remove qualquer link antigo antes de validar a conta.
+    document.getElementById("admin-back-link")?.remove();
 
     const usuario = await usuarioAtual();
     if (!usuario) return;
@@ -1501,10 +1501,18 @@ async function controlarLinkPainelAdmin() {
         .eq("id", usuario.id)
         .maybeSingle();
 
-    linkPainel.hidden = Boolean(error || perfil?.role !== "admin");
+    if (error || perfil?.role !== "admin") return;
+
+    const linkPainel = document.createElement("a");
+    linkPainel.href = "admin.html";
+    linkPainel.id = "admin-back-link";
+    linkPainel.className = "nav-cta";
+    linkPainel.textContent = "PAINEL DO BARBEIRO";
+    nav.insertBefore(linkPainel, nav.querySelector("#logout"));
 }
 
 controlarLinkPainelAdmin();
+
 
 // DASHBOARD ADMINISTRATIVO — SEM BIBLIOTECA EXTERNA
 async function carregarDashboardAdmin() {
