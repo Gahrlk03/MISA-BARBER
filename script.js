@@ -1015,27 +1015,47 @@ async function carregarProximosAgendamentos() {
     }));
 }
 
-// HISTÓRICO: SERVIÇOS CONCLUÍDOS E CANCELADOS
-let abaHistoricoAdmin = "completed";
-async function carregarHistoricoAdmin() {
+// DETALHES DO GRÁFICO: LISTA TODOS OS AGENDAMENTOS DO STATUS SELECIONADO
+let statusSelecionadoDashboard = null;
+
+async function carregarHistoricoAdmin(status = statusSelecionadoDashboard) {
     const container = $("admin-history");
-    if (!container) return;
-    const {data,error} = await supabase.from("appointments").select("id,start_at,end_at,status,profiles!appointments_customer_id_fkey(full_name,phone),services(name,price)").eq("status",abaHistoricoAdmin).order("start_at",{ascending:false}).limit(200);
-    if (error) { container.innerHTML = '<p class="muted">Erro ao carregar histórico: ' + escapar(error.message) + '</p>'; return; }
-    if (!data || !data.length) {
-        container.innerHTML = abaHistoricoAdmin === "completed" ? "<p>Nenhum atendimento concluído ainda.</p>" : "<p>Nenhum agendamento cancelado.</p>";
+    if (!container || !status) return;
+
+    statusSelecionadoDashboard = status;
+    const nomes = {
+        pending: "Pendentes",
+        confirmed: "Confirmados",
+        completed: "Finalizados",
+        cancelled: "Cancelados"
+    };
+    const titulo = $("dashboard-status-title");
+    if (titulo) titulo.textContent = "Agendamentos: " + (nomes[status] || status);
+
+    container.innerHTML = '<p class="muted">Carregando agendamentos...</p>';
+    const { data, error } = await supabase
+        .from("appointments")
+        .select("id,start_at,end_at,status,profiles!appointments_customer_id_fkey(full_name,phone),services(name,price)")
+        .eq("status", status)
+        .order("start_at", { ascending: false })
+        .limit(1000);
+
+    if (error) {
+        container.innerHTML = '<p class="error">Não foi possível carregar os agendamentos: ' + escapar(error.message) + '</p>';
         return;
     }
+
+    if (!data || !data.length) {
+        container.innerHTML = '<p class="muted">Nenhum agendamento com status ' + escapar(nomes[status]) + '.</p>';
+        return;
+    }
+
     container.innerHTML = data.map(item => {
-        const dataTexto = new Date(item.start_at).toLocaleDateString("pt-BR",{timeZone:"America/Sao_Paulo"});
-        return '<article class="item history-item"><strong>' + escapar(dataTexto) + ' às ' + escapar(formatarHorario(item.start_at)) + '</strong><p>Cliente: ' + escapar(item.profiles?.full_name || "Não informado") + '</p><p>Telefone: ' + escapar(item.profiles?.phone || "Não informado") + '</p><p>Serviço: ' + escapar(item.services?.name || "Serviço removido") + '</p><p>Preço: ' + dinheiro(item.services?.price || 0) + '</p><p>Status: ' + (item.status === "completed" ? "Concluído" : "Cancelado") + '</p></article>';
+        const dataTexto = new Date(item.start_at).toLocaleDateString("pt-BR", { timeZone: "America/Sao_Paulo" });
+        const horaTexto = new Date(item.start_at).toLocaleTimeString("pt-BR", { timeZone: "America/Sao_Paulo", hour: "2-digit", minute: "2-digit" });
+        return '<article class="item history-item"><strong>' + escapar(dataTexto) + ' às ' + escapar(horaTexto) + '</strong><p>Cliente: ' + escapar(item.profiles?.full_name || "Não informado") + '</p><p>Telefone: ' + escapar(item.profiles?.phone || "Não informado") + '</p><p>Serviço: ' + escapar(item.services?.name || "Serviço removido") + '</p><p>Preço: ' + dinheiro(item.services?.price || 0) + '</p><p>Status: ' + escapar(nomes[item.status] || item.status) + '</p></article>';
     }).join("");
 }
-document.querySelectorAll("[data-history-tab]").forEach(botao => botao.addEventListener("click", async () => {
-    abaHistoricoAdmin = botao.dataset.historyTab;
-    document.querySelectorAll("[data-history-tab]").forEach(tab => tab.classList.toggle("active",tab === botao));
-    await carregarHistoricoAdmin();
-}));
 
 // CALENDÁRIO MENSAL DO PAINEL DO BARBEIRO
 let mesCalendarioAdmin = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
@@ -1192,7 +1212,7 @@ if ($("admin-date")) {
 if ($("load-admin")) {
     $("load-admin").addEventListener("click", async () => { await carregarCalendarioAdmin(); await carregarAgendaAdmin(); });
 }
-if ($("admin-calendar")) { carregarCalendarioAdmin(); carregarAgendaAdmin(); carregarProximosAgendamentos(); carregarHistoricoAdmin(); }
+if ($("admin-calendar")) { carregarCalendarioAdmin(); carregarAgendaAdmin(); carregarProximosAgendamentos(); }
 
 // ADMIN: SERVIÇOS
 
@@ -1678,18 +1698,33 @@ async function carregarDashboardAdmin() {
     `).join("");
 
     const status = [
-        {label:"Pendentes",value:contar("pending"),color:"#D6A84F"},
-        {label:"Confirmados",value:contar("confirmed"),color:"#7FAE69"},
-        {label:"Finalizados",value:contar("completed"),color:"#A8D94F"},
-        {label:"Cancelados",value:contar("cancelled"),color:"#9B5555"}
+        {key:"pending",label:"Pendentes",value:contar("pending"),color:"#D6A84F"},
+        {key:"confirmed",label:"Confirmados",value:contar("confirmed"),color:"#7FAE69"},
+        {key:"completed",label:"Finalizados",value:contar("completed"),color:"#A8D94F"},
+        {key:"cancelled",label:"Cancelados",value:contar("cancelled"),color:"#9B5555"}
     ];
     const totalStatus = Math.max(1, agendamentos.length);
     $("status-chart").innerHTML = status.map(item => `
-        <div class="status-row">
-            <div><span><i style="background:${item.color}"></i>${item.label}</span><strong>${item.value}</strong></div>
-            <div class="status-track"><span style="width:${item.value / totalStatus * 100}%;background:${item.color}"></span></div>
-        </div>
+        <button type="button" class="status-row status-row-button ${statusSelecionadoDashboard === item.key ? "selected" : ""}" data-dashboard-status="${item.key}" aria-pressed="${statusSelecionadoDashboard === item.key}">
+            <span class="status-row-heading"><span><i style="background:${item.color}"></i>${item.label}</span><strong>${item.value}</strong></span>
+            <span class="status-track"><span style="width:${item.value / totalStatus * 100}%;background:${item.color}"></span></span>
+        </button>
     `).join("");
+
+    $("status-chart").querySelectorAll("[data-dashboard-status]").forEach(botao => {
+        botao.addEventListener("click", async () => {
+            $("status-chart").querySelectorAll("[data-dashboard-status]").forEach(linha => {
+                linha.classList.toggle("selected", linha === botao);
+                linha.setAttribute("aria-pressed", String(linha === botao));
+            });
+            await carregarHistoricoAdmin(botao.dataset.dashboardStatus);
+            $("admin-history")?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        });
+    });
+
+    if (statusSelecionadoDashboard) {
+        await carregarHistoricoAdmin(statusSelecionadoDashboard);
+    }
 }
 
 if ($("refresh-dashboard")) {
