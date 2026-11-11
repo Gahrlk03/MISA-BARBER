@@ -6,7 +6,7 @@
 
     <title>Painel | MISA BARBER</title>
 
-    <link rel="stylesheet" href="style.css?v=historico-status-1">
+    <link rel="stylesheet" href="style.css?v=painel-detalhes-status-2">
 
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -43,7 +43,7 @@
             </div>
             <div class="charts-grid">
                 <section class="panel chart-panel"><h2>Serviços finalizados — últimos 7 dias</h2><div id="completed-chart" class="bar-chart" aria-label="Gráfico de serviços finalizados nos últimos sete dias"></div></section>
-                <section class="panel chart-panel"><h2>Status dos agendamentos</h2><div id="status-chart" class="status-chart" aria-label="Gráfico dos status dos agendamentos"></div></section>
+                <section class="panel chart-panel"><h2>Status dos agendamentos</h2><div id="status-chart" class="status-chart" aria-label="Gráfico dos status dos agendamentos"></div><section class="dashboard-status-details" aria-live="polite"><h3 id="dashboard-status-title">Detalhes dos agendamentos</h3><div id="admin-history" class="stack"><p class="muted">Clique em um status do gráfico para ver os agendamentos.</p></div></section></section>
             </div>
         </section>
 
@@ -79,14 +79,6 @@
                 </div>
                 <h3 class="agenda-selected-title" id="agenda-selected-title">Agendamentos do dia</h3>
                 <div id="admin-bookings" class="stack">Carregando...</div>
-                <section class="booking-history">
-                    <h3>Histórico de atendimentos</h3>
-                    <div class="history-tabs">
-                        <button type="button" class="history-tab active" data-history-tab="completed">Concluídos</button>
-                        <button type="button" class="history-tab" data-history-tab="cancelled">Cancelados</button>
-                    </div>
-                    <div id="admin-history" class="stack"><p class="muted">Carregando histórico...</p></div>
-                </section>
 
             </section>
 
@@ -202,7 +194,7 @@
 
     </main>
 
-    <script type="module" src="script.js?v=historico-status-1"></script>
+    <script type="module" src="script.js?v=painel-detalhes-status-2"></script>
 
 </body>
 </html>
