@@ -399,3 +399,20 @@ footer p, footer small { color: #333333 !important; }
   color: #A8D94F !important;
   border-color: #303030 !important;
 }
+
+
+/* DASHBOARD ADMINISTRATIVO */
+.admin-dashboard { margin:28px 0 34px; }
+.dashboard-heading { display:flex; align-items:center; justify-content:space-between; gap:18px; margin-bottom:18px; }
+.dashboard-heading h2 { color:var(--mint); font-size:24px; }
+.stats-grid { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:13px; }
+.stat-card { min-width:0; padding:20px; background:var(--surface); border:1px solid var(--line); border-radius:16px; }
+.stat-card span,.stat-card small { display:block; color:var(--muted); font-size:11px; }
+.stat-card strong { display:block; margin:10px 0 6px; color:var(--white); font-size:clamp(22px,3vw,32px); overflow-wrap:anywhere; }
+.stat-card.highlight { border-color:var(--mint); background:linear-gradient(145deg,var(--surface),#26351F); }
+.stat-card.highlight strong { color:var(--mint); font-size:clamp(18px,2.4vw,27px); }
+.charts-grid { display:grid; grid-template-columns:1.4fr 1fr; gap:18px; margin-top:18px; }
+.chart-panel { min-width:0; }
+.chart-panel canvas { width:100% !important; height:280px !important; max-height:280px; }
+@media(max-width:1000px) { .stats-grid { grid-template-columns:repeat(3,minmax(0,1fr)); } }
+@media(max-width:700px) { .stats-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .charts-grid { grid-template-columns:1fr; } .dashboard-heading { align-items:flex-start; flex-direction:column; } }
