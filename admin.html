@@ -28,6 +28,24 @@
 
         <h1>Painel do barbeiro</h1>
 
+        <section class="admin-dashboard">
+            <div class="dashboard-heading">
+                <div><p class="eyebrow">VISÃO GERAL</p><h2>Resumo da barbearia</h2><p class="muted">Indicadores atualizados com os agendamentos registrados.</p></div>
+                <button class="btn small" id="refresh-dashboard" type="button">ATUALIZAR PAINEL</button>
+            </div>
+            <div class="stats-grid">
+                <article class="stat-card"><span>Agendamentos</span><strong id="stat-total">—</strong><small>Total registrado</small></article>
+                <article class="stat-card"><span>Pendentes</span><strong id="stat-pending">—</strong><small>Aguardando atendimento</small></article>
+                <article class="stat-card"><span>Confirmados</span><strong id="stat-confirmed">—</strong><small>Na agenda</small></article>
+                <article class="stat-card"><span>Finalizados</span><strong id="stat-completed">—</strong><small>Serviços concluídos</small></article>
+                <article class="stat-card highlight"><span>Faturamento concluído</span><strong id="stat-revenue">—</strong><small>Somente serviços finalizados</small></article>
+            </div>
+            <div class="charts-grid">
+                <section class="panel chart-panel"><h2>Serviços finalizados — últimos 7 dias</h2><canvas id="completed-chart" aria-label="Gráfico de serviços finalizados nos últimos sete dias"></canvas></section>
+                <section class="panel chart-panel"><h2>Status dos agendamentos</h2><canvas id="status-chart" aria-label="Gráfico dos status dos agendamentos"></canvas></section>
+            </div>
+        </section>
+
         <div class="admin-grid">
 
             <section class="panel">
@@ -165,6 +183,7 @@
 
     </main>
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script type="module" src="script.js"></script>
 
 </body>
