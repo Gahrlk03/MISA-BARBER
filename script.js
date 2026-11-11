@@ -1595,6 +1595,10 @@ if (blockForm) {
 
 // CRIAR O LINK DO PAINEL SOMENTE DEPOIS DE CONFIRMAR QUE A CONTA E ADMIN
 async function controlarLinkPainelAdmin() {
+    // O acesso ao painel aparece somente dentro da área de agendamento do cliente.
+    // Nunca exibir esse atalho na página pública, login ou cadastro.
+    if (!document.querySelector("#booking-form")) return;
+
     const nav = document.querySelector("header nav");
     if (!nav) return;
 
