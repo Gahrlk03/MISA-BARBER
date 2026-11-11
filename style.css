@@ -438,3 +438,10 @@ footer p, footer small { color: #333333 !important; }
 .service-admin-item label { margin:8px 0; }
 .service-admin-item .actions button { flex:1; }
 .service-admin-item input { min-height:38px; }
+
+
+/* CAMPO DE SENHA COM OPÇÃO DE VISUALIZAÇÃO */
+.password-field { position:relative; display:flex; align-items:center; }
+.password-field input { width:100%; padding-right:94px; }
+.password-toggle { position:absolute; right:10px; border:0; background:transparent; color:var(--mint); font-size:10px; font-weight:800; letter-spacing:.5px; cursor:pointer; padding:9px 7px; }
+.password-toggle:hover { color:var(--white); }
