@@ -1484,11 +1484,27 @@ if (blockForm) {
 
 
 
-// ACESSO AO PAINEL ADMINISTRATIVO
-// O link fica visível na área do cliente; a página admin.html valida a permissão no servidor.
-if ($("admin-back-link")) {
-    $("admin-back-link").hidden = false;
+// MOSTRAR O LINK DO PAINEL SOMENTE PARA A CONTA ADMINISTRADORA
+async function controlarLinkPainelAdmin() {
+    const linkPainel = $("admin-back-link");
+    if (!linkPainel) return;
+
+    // Por segurança, o link começa sempre escondido.
+    linkPainel.hidden = true;
+
+    const usuario = await usuarioAtual();
+    if (!usuario) return;
+
+    const { data: perfil, error } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", usuario.id)
+        .maybeSingle();
+
+    linkPainel.hidden = Boolean(error || perfil?.role !== "admin");
 }
+
+controlarLinkPainelAdmin();
 
 // DASHBOARD ADMINISTRATIVO — SEM BIBLIOTECA EXTERNA
 async function carregarDashboardAdmin() {
