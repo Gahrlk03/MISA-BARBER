@@ -867,6 +867,7 @@ async function carregarMeusAgendamentos() {
             services(name, price)
         `)
         .eq("customer_id", usuario.id)
+        .neq("status", "cancelled")
         .order("start_at", { ascending: true });
 
     if (error) {
@@ -953,6 +954,7 @@ async function carregarAgendaAdmin() {
         `)
         .gte("start_at", inicio.toISOString())
         .lt("start_at", fim.toISOString())
+        .neq("status", "cancelled")
         .order("start_at");
 
     if (error) {
@@ -978,6 +980,7 @@ async function carregarAgendaAdmin() {
                 <button class="btn small" data-status="${item.id}" data-value="confirmed">CONFIRMAR</button>
                 <button class="btn small" data-status="${item.id}" data-value="completed">CONCLUIR</button>
                 <button class="btn danger small" data-status="${item.id}" data-value="cancelled">CANCELAR</button>
+                <button class="btn danger small" data-delete-booking="${item.id}">EXCLUIR</button>
             </div>
         </article>
     `).join("");
@@ -1000,6 +1003,33 @@ async function carregarAgendaAdmin() {
                 await carregarDashboardAdmin();
             }
         });
+    });
+}
+
+// EXCLUIR AGENDAMENTO: cancela no banco e remove das listas do cliente e do administrador.
+if ($("admin-bookings")) {
+    $("admin-bookings").addEventListener("click", async evento => {
+        const botao = evento.target.closest("[data-delete-booking]");
+        if (!botao) return;
+
+        if (!confirm("Excluir este agendamento? Ele será cancelado e deixará de aparecer na agenda do cliente e do painel.")) return;
+
+        botao.disabled = true;
+        const { data, error } = await supabase
+            .from("appointments")
+            .update({ status: "cancelled" })
+            .eq("id", botao.dataset.deleteBooking)
+            .select("id")
+            .maybeSingle();
+
+        if (error || !data) {
+            botao.disabled = false;
+            alert(error?.message || "Não foi possível cancelar. Confira se você está usando a conta administradora.");
+            return;
+        }
+
+        await carregarAgendaAdmin();
+        await carregarDashboardAdmin();
     });
 }
 
