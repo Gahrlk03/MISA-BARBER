@@ -6,7 +6,7 @@
 
     <title>Painel | MISA BARBER</title>
 
-    <link rel="stylesheet" href="style.css?v=dashboard-20261111">
+    <link rel="stylesheet" href="style.css?v=admin-dashboard-v2">
 
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -41,8 +41,8 @@
                 <article class="stat-card highlight"><span>Faturamento concluído</span><strong id="stat-revenue">—</strong><small>Somente serviços finalizados</small></article>
             </div>
             <div class="charts-grid">
-                <section class="panel chart-panel"><h2>Serviços finalizados — últimos 7 dias</h2><canvas id="completed-chart" aria-label="Gráfico de serviços finalizados nos últimos sete dias"></canvas></section>
-                <section class="panel chart-panel"><h2>Status dos agendamentos</h2><canvas id="status-chart" aria-label="Gráfico dos status dos agendamentos"></canvas></section>
+                <section class="panel chart-panel"><h2>Serviços finalizados — últimos 7 dias</h2><div id="completed-chart" class="bar-chart" aria-label="Gráfico de serviços finalizados nos últimos sete dias"></div></section>
+                <section class="panel chart-panel"><h2>Status dos agendamentos</h2><div id="status-chart" class="status-chart" aria-label="Gráfico dos status dos agendamentos"></div></section>
             </div>
         </section>
 
@@ -183,8 +183,7 @@
 
     </main>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script type="module" src="script.js?v=dashboard-20261111"></script>
+    <script type="module" src="script.js?v=admin-dashboard-v2"></script>
 
 </body>
 </html>
