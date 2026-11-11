@@ -164,7 +164,7 @@ if (cadastroForm) {
 
         mostrarMensagem("message", "Criando sua conta...");
 
-        const paginaConfirmacao = "https://gahrlk03.github.io/MISA-BARBER/login.html";
+        const paginaConfirmacao = "https://gahrlk03.github.io/MISA-BARBER/confirmacao.html";
 
         const { error } = await supabase.auth.signUp({
             email,
@@ -185,11 +185,74 @@ if (cadastroForm) {
             return;
         }
 
-        mostrarMensagem(
-            "message",
-            "Cadastro realizado! Enviamos um link para seu e-mail. Abra a mensagem, clique em “Confirmar e-mail” e depois volte à página Entrar. Confira também a caixa de spam."
-        );
+        location.href = "confirmacao.html?email=" + encodeURIComponent(email);
     });
+}
+
+// CONFIRMAÇÃO DE E-MAIL POR CÓDIGO (OTP)
+const confirmationForm = $("confirmation-form");
+if (confirmationForm) {
+    const campoEmail = $("confirmation-email");
+    const campoCodigo = $("confirmation-code");
+    const parametros = new URLSearchParams(location.search);
+    if (campoEmail && parametros.get("email")) {
+        campoEmail.value = parametros.get("email");
+    }
+
+    confirmationForm.addEventListener("submit", async evento => {
+        evento.preventDefault();
+        const email = campoEmail.value.trim().toLowerCase();
+        const token = campoCodigo.value.trim().replace(/\\s/g, "");
+        const botao = confirmationForm.querySelector("button[type=submit]");
+        botao.disabled = true;
+        mostrarMensagem("message", "Confirmando seu e-mail...");
+
+        const { data, error } = await supabase.auth.verifyOtp({
+            email,
+            token,
+            type: "email"
+        });
+
+        botao.disabled = false;
+        if (error) {
+            console.error("Erro na confirmação:", error);
+            mostrarMensagem("message", "Código inválido ou expirado. Peça outro código e tente novamente.", true);
+            return;
+        }
+
+        mostrarMensagem("message", "E-mail confirmado! Redirecionando...");
+        setTimeout(async () => {
+            const { data: perfil } = await supabase
+                .from("profiles")
+                .select("role")
+                .eq("id", data.user.id)
+                .single();
+            location.href = perfil?.role === "admin" ? "admin.html" : "agendamento.html";
+        }, 1200);
+    });
+
+    const reenviar = $("resend-confirmation");
+    if (reenviar) {
+        reenviar.addEventListener("click", async () => {
+            const email = campoEmail.value.trim().toLowerCase();
+            if (!email || !email.includes("@")) {
+                mostrarMensagem("message", "Digite um e-mail válido.", true);
+                campoEmail.focus();
+                return;
+            }
+            reenviar.disabled = true;
+            const { error } = await supabase.auth.resend({
+                type: "signup",
+                email
+            });
+            reenviar.disabled = false;
+            mostrarMensagem(
+                "message",
+                error ? "Não foi possível reenviar. Aguarde um pouco e tente novamente." : "Se a conta estiver aguardando confirmação, um novo código será enviado."
+                , Boolean(error)
+            );
+        });
+    }
 }
 
 // LOGIN
