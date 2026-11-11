@@ -1075,6 +1075,7 @@ async function carregarServicosAdmin() {
                     <button class="btn small" type="button" data-service-toggle="${servico.id}" data-active="${servico.active}">
                         ${servico.active ? "DESATIVAR" : "ATIVAR"}
                     </button>
+                    <button class="btn danger small" type="button" data-service-delete="${servico.id}">EXCLUIR</button>
                 </div>
                 <p class="message" data-service-message></p>
             </form>
@@ -1115,6 +1116,52 @@ async function carregarServicosAdmin() {
             }
             mensagem.classList.remove("error");
             mensagem.textContent = "Serviço atualizado. O novo nome, preço e duração já estão no cadastro para os clientes.";
+            await carregarServicosAdmin();
+        });
+    });
+
+    container.querySelectorAll("[data-service-delete]").forEach(botao => {
+        botao.addEventListener("click", async () => {
+            const usuario = await exigirAdmin();
+            if (!usuario) return;
+            if (!confirm("Excluir este serviço? Se ele já tiver agendamentos no histórico, será apenas desativado para preservar os registros.")) return;
+
+            botao.disabled = true;
+            const serviceId = botao.dataset.serviceDelete;
+            const { count, error: erroConsulta } = await supabase
+                .from("appointments")
+                .select("id", { count: "exact", head: true })
+                .eq("service_id", serviceId);
+
+            if (erroConsulta) {
+                botao.disabled = false;
+                alert("Não foi possível verificar o histórico: " + erroConsulta.message);
+                return;
+            }
+
+            if (count > 0) {
+                const { error } = await supabase
+                    .from("services")
+                    .update({ active: false })
+                    .eq("id", serviceId);
+                botao.disabled = false;
+                if (error) {
+                    alert("Não foi possível desativar o serviço: " + error.message);
+                    return;
+                }
+                alert("Este serviço já possui agendamentos no histórico. Ele foi desativado e não aparecerá mais para novos clientes.");
+            } else {
+                const { error } = await supabase
+                    .from("services")
+                    .delete()
+                    .eq("id", serviceId);
+                botao.disabled = false;
+                if (error) {
+                    alert("Não foi possível excluir o serviço: " + error.message);
+                    return;
+                }
+                alert("Serviço excluído com sucesso.");
+            }
             await carregarServicosAdmin();
         });
     });
