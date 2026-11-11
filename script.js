@@ -1006,25 +1006,27 @@ async function carregarAgendaAdmin() {
     });
 }
 
-// EXCLUIR AGENDAMENTO: cancela no banco e remove das listas do cliente e do administrador.
+// EXCLUIR AGENDAMENTO: remove o registro definitivamente do banco.
 if ($("admin-bookings")) {
     $("admin-bookings").addEventListener("click", async evento => {
         const botao = evento.target.closest("[data-delete-booking]");
         if (!botao) return;
 
-        if (!confirm("Excluir este agendamento? Ele será cancelado e deixará de aparecer na agenda do cliente e do painel.")) return;
+        const usuario = await exigirAdmin();
+        if (!usuario) return;
+        if (!confirm("Tem certeza que deseja excluir este agendamento definitivamente? Ele também deixará de aparecer para o cliente.")) return;
 
         botao.disabled = true;
         const { data, error } = await supabase
             .from("appointments")
-            .update({ status: "cancelled" })
+            .delete()
             .eq("id", botao.dataset.deleteBooking)
             .select("id")
             .maybeSingle();
 
         if (error || !data) {
             botao.disabled = false;
-            alert(error?.message || "Não foi possível cancelar. Confira se você está usando a conta administradora.");
+            alert(error?.message || "Não foi possível excluir. Confira a permissão da conta administradora.");
             return;
         }
 
