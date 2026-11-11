@@ -66,7 +66,31 @@ function escapar(texto) {
     })[caractere]);
 }
 
+const CHAVE_SESSAO_30_MIN = "misa_barber_login_expira";
+const DURACAO_SESSAO_30_MIN = 30 * 60 * 1000;
+
+function marcarLogin30Minutos() {
+    localStorage.setItem(CHAVE_SESSAO_30_MIN, String(Date.now() + DURACAO_SESSAO_30_MIN));
+}
+
+async function verificarSessao30Minutos() {
+    const expiracao = Number(localStorage.getItem(CHAVE_SESSAO_30_MIN) || 0);
+    if (!expiracao || Date.now() >= expiracao) {
+        localStorage.removeItem(CHAVE_SESSAO_30_MIN);
+        const { data } = await supabase.auth.getSession();
+        if (data.session) await supabase.auth.signOut();
+        return false;
+    }
+    return true;
+}
+
 async function usuarioAtual() {
+    const sessaoValida = await verificarSessao30Minutos();
+    if (!sessaoValida) return null;
+    const { data, error } = await supabase.auth.getUser();
+    if (error) return null;
+    return data.user;
+}
     const { data, error } = await supabase.auth.getUser();
     if (error) return null;
     return data.user;
@@ -106,6 +130,7 @@ async function exigirAdmin() {
 
 document.querySelectorAll("#logout").forEach(botao => {
     botao.addEventListener("click", async () => {
+        localStorage.removeItem(CHAVE_SESSAO_30_MIN);
         await supabase.auth.signOut();
         location.href = "index.html";
     });
@@ -151,7 +176,17 @@ if (cadastroForm) {
     cadastroForm.addEventListener("submit", async evento => {
         evento.preventDefault();
 
-        if (!configurado) {
+        // Se já estiver autenticado, a página inicial encaminha para a área correta.
+if (document.querySelector(".hero") && configurado) {
+    (async () => {
+        const usuario = await usuarioAtual();
+        if (!usuario) return;
+        const { data: perfil } = await supabase.from("profiles").select("role").eq("id", usuario.id).single();
+        location.replace(perfil?.role === "admin" ? "admin.html" : "agendamento.html");
+    })();
+}
+
+if (!configurado) {
             mostrarMensagem("message", "Configure o Supabase primeiro.", true);
             return;
         }
@@ -346,6 +381,8 @@ if (loginForm) {
             }
             return;
         }
+
+        marcarLogin30Minutos();
 
         const usuario = resultado.data.user;
 
